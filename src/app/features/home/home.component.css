@@ -1,0 +1,59 @@
+@media (max-width: 767px) {
+  .hero-content {
+    padding-top: 0;
+    padding-bottom: max(0.5rem, 1.5vh);
+    padding-left: 1.25rem;
+    padding-right: 2.5rem;
+  }
+}
+
+/* Mobile: soft vertical fade so image blends into #5c2505 above/below */
+@media (max-width: 767px) {
+  .banner-god-image {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      black 14%,
+      black 68%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      black 14%,
+      black 68%,
+      transparent 100%
+    );
+  }
+}
+
+@media (min-width: 768px) {
+  .banner-god-image {
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+}
+
+.hero-bottom-fade {
+  height: clamp(2.5rem, 7vw, 3.5rem);
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(92, 37, 5, 0.06) 40%,
+    rgba(255, 255, 255, 0.45) 82%,
+    #ffffff 100%
+  );
+}
+
+@media (min-width: 768px) {
+  .hero-bottom-fade {
+    height: clamp(3rem, 4.5vw, 4rem);
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(92, 37, 5, 0.08) 35%,
+      rgba(255, 255, 255, 0.55) 70%,
+      #ffffff 100%
+    );
+  }
+}

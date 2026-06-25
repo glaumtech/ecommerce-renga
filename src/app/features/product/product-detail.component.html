@@ -1,0 +1,37 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  @if (detailLoading()) {
+    <app-loading-spinner message="Loading product..." />
+  } @else if (detailError()) {
+    <app-empty-state
+      title="Product not found"
+      description="This product is unavailable or the link may be incorrect. Please browse our shop for other items."
+      actionLabel="Browse Shop"
+      (action)="goToShop()"
+    />
+  } @else if (selectedProduct()) {
+    @let product = selectedProduct()!;
+    <app-product-breadcrumb [product]="product" />
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
+      <app-product-gallery [product]="product" />
+      <app-product-info
+        [product]="product"
+        [quantity]="quantity()"
+        (increment)="incrementQuantity()"
+        (decrement)="decrementQuantity()"
+        (addToCart)="addToCart()"
+        (buyNow)="buyNow()"
+      />
+    </div>
+
+    <div class="mb-10">
+      <app-product-trust-badges />
+    </div>
+
+    <div class="mb-10">
+      <app-product-faq />
+    </div>
+
+    <app-similar-products [products]="similarProducts()" />
+  }
+</div>

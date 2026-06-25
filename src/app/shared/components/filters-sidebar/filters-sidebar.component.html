@@ -1,0 +1,79 @@
+<div
+  class="bg-white p-6 rounded-xl border border-slate-200"
+  [class.sticky]="sticky()"
+  [class.top-24]="sticky()"
+  [class.shadow-sm]="sticky()"
+  [class.border-0]="!sticky()"
+  [class.p-0]="!sticky()"
+  [class.rounded-none]="!sticky()"
+>
+  @if (sticky()) {
+    <div class="flex items-center mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-amber-600 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+      <h3 class="font-bold text-lg text-slate-800">Filters</h3>
+    </div>
+  }
+
+  <div class="mb-8">
+    <h4 class="font-semibold text-slate-800 mb-3 text-sm uppercase tracking-wider">Categories</h4>
+    <div class="space-y-3">
+      <label class="flex items-center cursor-pointer group">
+        <input
+          type="radio"
+          name="category"
+          [checked]="selectedCategory() === allCategory"
+          (change)="categoryChange.emit(allCategory)"
+          class="w-4 h-4 text-amber-600 focus:ring-amber-500 border-slate-300"
+        />
+        <span class="ml-3 text-sm font-medium text-slate-700">{{ allCategory }}</span>
+      </label>
+
+      @for (main of categoryTree(); track main.id) {
+        <div class="space-y-1.5">
+          <label class="flex items-center cursor-pointer group">
+            <input
+              type="radio"
+              name="category"
+              [checked]="selectedCategory() === main.name"
+              (change)="categoryChange.emit(main.name)"
+              class="w-4 h-4 text-amber-600 focus:ring-amber-500 border-slate-300"
+            />
+            <span
+              class="ml-3 text-sm transition-colors font-semibold"
+              [class]="selectedCategory() === main.name ? 'text-amber-800' : 'text-slate-700 group-hover:text-amber-600'"
+            >
+              {{ main.name }}
+            </span>
+          </label>
+          @for (sub of main.subCategories ?? []; track sub.id) {
+            <label class="flex items-center cursor-pointer group pl-6">
+              <input
+                type="radio"
+                name="category"
+                [checked]="selectedCategory() === sub.name"
+                (change)="categoryChange.emit(sub.name)"
+                class="w-4 h-4 text-amber-600 focus:ring-amber-500 border-slate-300"
+              />
+              <span
+                class="ml-3 text-sm transition-colors"
+                [class]="selectedCategory() === sub.name ? 'text-amber-700 font-medium' : 'text-slate-500 group-hover:text-amber-600'"
+              >
+                {{ sub.name }}
+              </span>
+            </label>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  @if (showClear()) {
+    <button
+      (click)="clearFilters.emit()"
+      class="w-full mt-6 text-sm text-slate-500 hover:text-slate-800 underline decoration-slate-300 underline-offset-4"
+      type="button"
+    >
+      Clear Filters
+    </button>
+  }
+</div>

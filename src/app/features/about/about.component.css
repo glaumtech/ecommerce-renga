@@ -1,0 +1,25 @@
+.timeline-connector {
+  position: absolute;
+  top: 1.75rem;
+  left: 10%;
+  right: 10%;
+  height: 2px;
+  background: linear-gradient(to right, #f59e0b, #d97706, #f59e0b);
+  border-radius: 9999px;
+}
+
+@media (max-width: 767px) {
+  .timeline-connector {
+    display: none;
+  }
+}
+
+.founder-portrait-frame {
+  line-height: 0;
+}
+
+.founder-portrait {
+  display: block;
+  width: 100%;
+  height: auto;
+}

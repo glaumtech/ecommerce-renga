@@ -1,0 +1,37 @@
+<div class="min-h-screen flex items-center justify-center bg-slate-50 px-4 py-12">
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-sm border border-slate-100 p-8">
+    <img src="brand-logo.png" alt="Sri Renga Traders" class="h-20 w-auto object-contain mx-auto mb-6" width="280" height="72" />
+    <h1 class="text-2xl font-serif font-bold text-slate-800 mb-8 text-center">Create Account</h1>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Username</label>
+        <input formControlName="name" type="text" class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-amber-500 outline-none" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Email</label>
+        <input formControlName="email" type="email" class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-amber-500 outline-none" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Password</label>
+        <input formControlName="password" type="password" class="w-full border border-slate-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-amber-500 outline-none" />
+      </div>
+
+      @if (error()) {
+        <p class="text-sm text-red-600">{{ error() }}</p>
+      }
+      @if (success()) {
+        <p class="text-sm text-green-600">{{ success() }}</p>
+      }
+
+      <button type="submit" [disabled]="loading()" class="w-full bg-amber-600 hover:bg-amber-700 disabled:opacity-60 text-white font-bold py-3 rounded-xl transition-all">
+        {{ loading() ? 'Creating account...' : 'Register' }}
+      </button>
+    </form>
+
+    <p class="text-sm text-center text-slate-500 mt-6">
+      Already have an account?
+      <a routerLink="/login" class="text-amber-600 font-medium hover:underline">Sign in</a>
+    </p>
+  </div>
+</div>
