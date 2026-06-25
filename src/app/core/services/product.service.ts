@@ -200,7 +200,7 @@ export class ProductService {
       seoTitle: dto.seoTitle,
       seoDescription: dto.seoDescription,
       seoRobots: dto.seoRobots,
-      ogImage: dto.ogImage,
+      ogImage: dto.ogImage ? resolveProductImageUrl(dto.ogImage) : undefined,
       canonicalUrl: dto.canonicalUrl,
       googleProductCategory: dto.googleProductCategory,
       gtin: dto.gtin,

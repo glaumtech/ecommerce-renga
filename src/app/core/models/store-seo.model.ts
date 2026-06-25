@@ -1,3 +1,9 @@
+export interface StoreMetaTag {
+  attr: 'name' | 'property' | 'http-equiv';
+  key: string;
+  content: string;
+}
+
 export interface StoreSeoSettings {
   siteName?: string;
   siteUrl?: string;
@@ -5,4 +11,5 @@ export interface StoreSeoSettings {
   googleSiteVerification?: string;
   ogDefaultImage?: string;
   currency?: string;
+  metaTags?: StoreMetaTag[];
 }

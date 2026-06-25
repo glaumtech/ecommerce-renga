@@ -33,6 +33,7 @@ export const productSeoResolver: ResolveFn<boolean> = async (route) => {
             googleSiteVerification: settings.googleSiteVerification,
             ogDefaultImage: settings.ogDefaultImage,
             currency: settings.currency || 'INR',
+            metaTags: settings.metaTags || [],
           });
           storeSeoService.loaded.set(true);
         }),

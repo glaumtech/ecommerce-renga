@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
-import { catchError, of, tap } from 'rxjs';
+import { catchError, firstValueFrom, of, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { StoreSeoSettings } from '../models/store-seo.model';
 
@@ -18,10 +18,13 @@ export class StoreSeoService {
   readonly settings = signal<StoreSeoSettings>(DEFAULT_SETTINGS);
   readonly loaded = signal(false);
 
-  loadSettings(): void {
-    this.http
-      .get<StoreSeoSettings>(this.storeUrl)
-      .pipe(
+  loadSettings(): Promise<StoreSeoSettings> {
+    if (this.loaded()) {
+      return Promise.resolve(this.settings());
+    }
+
+    return firstValueFrom(
+      this.http.get<StoreSeoSettings>(this.storeUrl).pipe(
         tap((settings) => {
           this.settings.set({ ...DEFAULT_SETTINGS, ...settings });
           this.loaded.set(true);
@@ -32,7 +35,7 @@ export class StoreSeoService {
           return of(DEFAULT_SETTINGS);
         })
       )
-      .subscribe();
+    );
   }
 
   resolveSiteUrl(): string {

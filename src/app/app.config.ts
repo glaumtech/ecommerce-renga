@@ -27,10 +27,7 @@ export const appConfig: ApplicationConfig = {
     {
       provide: APP_INITIALIZER,
       multi: true,
-      useFactory: (storeSeoService: StoreSeoService) => () => {
-        storeSeoService.loadSettings();
-        return Promise.resolve();
-      },
+      useFactory: (storeSeoService: StoreSeoService) => () => storeSeoService.loadSettings(),
       deps: [StoreSeoService],
     },
   ],
