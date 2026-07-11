@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { getCategoryHubByName } from '../../../core/constants/category-seo.constants';
 import { ProductService } from '../../../core/services/product.service';
 
 @Component({
@@ -37,12 +38,10 @@ import { ProductService } from '../../../core/services/product.service';
             @for (main of mainCategories(); track main.id) {
               <li>
                 <a
-                  [routerLink]="['/shop']"
-                  [queryParams]="{ category: main.name }"
+                  [routerLink]="categoryHubLink(main.name)"
                   class="text-white hover:text-amber-500 transition-colors"
                 >{{ main.name }}</a>
               </li>
-         
             }
           </ul>
         </div>
@@ -92,5 +91,10 @@ export class FooterComponent implements OnInit {
     if (this.productService.categories().length === 0) {
       this.productService.loadCategories();
     }
+  }
+
+  categoryHubLink(categoryName: string): (string | Record<string, string>)[] {
+    const hub = getCategoryHubByName(categoryName);
+    return hub ? ['/shop', hub.slug] : ['/shop'];
   }
 }

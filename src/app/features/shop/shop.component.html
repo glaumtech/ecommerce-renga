@@ -1,17 +1,34 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-in">
-  <div class="bg-amber-50 rounded-2xl p-8 mb-8 flex flex-col md:flex-row items-center justify-between border border-amber-100">
-    <div>
-      <h2 class="text-3xl font-serif font-bold text-slate-800 mb-2">Our Collection</h2>
-      <p class="text-slate-600">Find the perfect items for your spiritual practice.</p>
+  @if (activeHub(); as hub) {
+    <div class="mb-8">
+      <h1 class="text-3xl font-serif font-bold text-slate-800 mb-3">{{ hub.title }} in Trichy</h1>
+      <p class="text-slate-600 leading-relaxed max-w-3xl">{{ hub.intro }}</p>
     </div>
-    @if (searchQuery()) {
-      <div class="mt-4 md:mt-0 bg-white px-4 py-2 rounded-full shadow-sm border border-slate-100 flex items-center">
+  } @else {
+    <div class="bg-amber-50 rounded-2xl p-8 mb-8 flex flex-col md:flex-row items-center justify-between border border-amber-100">
+      <div>
+        <h1 class="text-3xl font-serif font-bold text-slate-800 mb-2">Our Collection</h1>
+        <p class="text-slate-600">Find pooja essentials, brassware, and herbal products for your spiritual practice.</p>
+      </div>
+      @if (searchQuery()) {
+        <div class="mt-4 md:mt-0 bg-white px-4 py-2 rounded-full shadow-sm border border-slate-100 flex items-center">
+          <span class="text-sm text-slate-500 mr-2">Showing results for:</span>
+          <span class="font-semibold text-slate-800">"{{ searchQuery() }}"</span>
+          <button (click)="clearSearch()" class="ml-3 text-slate-400 hover:text-slate-700" type="button">×</button>
+        </div>
+      }
+    </div>
+  }
+
+  @if (searchQuery() && activeHub()) {
+    <div class="mb-8 flex justify-end">
+      <div class="bg-white px-4 py-2 rounded-full shadow-sm border border-slate-100 flex items-center">
         <span class="text-sm text-slate-500 mr-2">Showing results for:</span>
         <span class="font-semibold text-slate-800">"{{ searchQuery() }}"</span>
         <button (click)="clearSearch()" class="ml-3 text-slate-400 hover:text-slate-700" type="button">×</button>
       </div>
-    }
-  </div>
+    </div>
+  }
 
   <!-- Mobile: horizontal category chips + filters button -->
   <div class="lg:hidden mb-6 space-y-3">
@@ -70,8 +87,20 @@
     </div>
 
     <div class="flex-1 min-w-0">
-      <div class="flex justify-between items-center mb-6">
+      <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
         <p class="text-slate-600 font-medium">{{ filteredProducts().length }} Products Found</p>
+        <div class="flex items-center gap-2">
+          <label for="shop-sort" class="text-sm text-slate-500">Sort by</label>
+          <select
+            id="shop-sort"
+            [value]="sortBy()"
+            (change)="onSortChange($event)"
+            class="text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-lg px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-amber-500/40 focus:border-amber-400 cursor-pointer"
+          >
+            <option value="name">Name</option>
+            <option value="price">Price</option>
+          </select>
+        </div>
       </div>
 
       @if (loading()) {

@@ -1,12 +1,20 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ALL_CATEGORY, Category } from '../../core/models/product.model';
+import {
+  getCategoryHubByName,
+  getCategoryHubBySlug,
+} from '../../core/constants/category-seo.constants';
+import { ALL_CATEGORY, Category, Product } from '../../core/models/product.model';
 import { CartService } from '../../core/services/cart.service';
 import { ProductService } from '../../core/services/product.service';
+import { SeoService } from '../../core/services/seo.service';
+import { StoreSeoService } from '../../core/services/store-seo.service';
 import { EmptyStateComponent } from '../../shared/components/empty-state/empty-state.component';
 import { FiltersSidebarComponent } from '../../shared/components/filters-sidebar/filters-sidebar.component';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
+
+type ProductSortOption = 'name' | 'price';
 
 @Component({
   selector: 'app-shop',
@@ -19,11 +27,15 @@ export class ShopComponent implements OnInit {
   private readonly cartService = inject(CartService);
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
+  private readonly seoService = inject(SeoService);
+  private readonly storeSeoService = inject(StoreSeoService);
 
   readonly loading = this.productService.loading;
   readonly error = this.productService.error;
   readonly searchQuery = signal('');
   readonly selectedCategory = signal(ALL_CATEGORY);
+  readonly sortBy = signal<ProductSortOption>('name');
+  readonly activeHub = signal(getCategoryHubBySlug(this.route.snapshot.paramMap.get('categorySlug') || ''));
 
   readonly categoryTree = computed(() =>
     sortCategoryTreeByName(this.productService.categories())
@@ -40,7 +52,9 @@ export class ShopComponent implements OnInit {
     return options;
   });
 
-  readonly filteredProducts = computed(() => this.productService.products());
+  readonly filteredProducts = computed(() =>
+    sortProducts(this.productService.products(), this.sortBy())
+  );
 
   readonly showClearFilters = computed(
     () => this.selectedCategory() !== ALL_CATEGORY || !!this.searchQuery()
@@ -50,22 +64,65 @@ export class ShopComponent implements OnInit {
 
   ngOnInit(): void {
     this.productService.loadCategories();
+
+    this.route.paramMap.subscribe((params) => {
+      const hub = getCategoryHubBySlug(params.get('categorySlug') || '');
+      this.activeHub.set(hub);
+      if (hub) {
+        this.selectedCategory.set(hub.categoryName);
+      }
+      this.applyPageSeo();
+      this.loadProducts();
+    });
+
     this.route.queryParamMap.subscribe((params) => {
       const category = params.get('category');
       const q = params.get('q');
-      if (category) {
+      const hubSlug = this.route.snapshot.paramMap.get('categorySlug');
+
+      if (!hubSlug && category) {
+        const hub = getCategoryHubByName(category);
+        if (hub) {
+          this.router.navigate(['/shop', hub.slug], {
+            queryParams: q ? { q } : {},
+            replaceUrl: true,
+          });
+          return;
+        }
+      }
+
+      if (category && !hubSlug) {
         this.selectedCategory.set(category);
       }
       if (q) {
         this.searchQuery.set(q);
       }
+      this.applyPageSeo();
       this.loadProducts();
     });
   }
 
+  onSortChange(event: Event): void {
+    const value = (event.target as HTMLSelectElement).value as ProductSortOption;
+    this.sortBy.set(value);
+  }
+
   onCategoryChange(category: string): void {
+    const hub = getCategoryHubByName(category);
+    if (hub) {
+      this.router.navigate(['/shop', hub.slug], {
+        queryParams: this.searchQuery() ? { q: this.searchQuery() } : {},
+      });
+      return;
+    }
+
     this.selectedCategory.set(category);
-    this.updateQueryParams();
+    this.router.navigate(['/shop'], {
+      queryParams: {
+        category: category !== ALL_CATEGORY ? category : null,
+        q: this.searchQuery() || null,
+      },
+    });
     this.loadProducts();
   }
 
@@ -94,6 +151,11 @@ export class ShopComponent implements OnInit {
     this.cartService.addToCart(product);
   }
 
+  categoryHubLink(categoryName: string): (string | Record<string, string>)[] {
+    const hub = getCategoryHubByName(categoryName);
+    return hub ? ['/shop', hub.slug] : ['/shop'];
+  }
+
   private loadProducts(): void {
     this.productService.loadProducts({
       category: this.selectedCategory(),
@@ -101,16 +163,40 @@ export class ShopComponent implements OnInit {
     });
   }
 
+  private applyPageSeo(): void {
+    const settings = this.storeSeoService.settings();
+    const hub = this.activeHub();
+    if (hub) {
+      this.seoService.applyCategoryHubSeo(hub, settings);
+      return;
+    }
+    this.seoService.applyShopSeo(settings);
+  }
+
   private updateQueryParams(): void {
-    this.router.navigate([], {
-      relativeTo: this.route,
+    const hub = this.activeHub();
+    if (hub) {
+      this.router.navigate(['/shop', hub.slug], {
+        queryParams: { q: this.searchQuery() || null },
+      });
+      return;
+    }
+
+    this.router.navigate(['/shop'], {
       queryParams: {
         category: this.selectedCategory() !== ALL_CATEGORY ? this.selectedCategory() : null,
         q: this.searchQuery() || null,
       },
-      queryParamsHandling: 'merge',
     });
   }
+}
+
+function sortProducts(products: Product[], sortBy: ProductSortOption): Product[] {
+  const copy = [...products];
+  if (sortBy === 'price') {
+    return copy.sort((a, b) => a.price - b.price);
+  }
+  return copy.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 }
 
 function sortCategoryTreeByName(categories: Category[]): Category[] {

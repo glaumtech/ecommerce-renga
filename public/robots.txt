@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Private / transactional — not search landing pages
+Disallow: /cart
+Disallow: /checkout
+Disallow: /account
+Disallow: /admin
+
+Sitemap: https://rengaa.in/sitemap.xml

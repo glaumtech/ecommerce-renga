@@ -5,7 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "prebuildrenga": "node scripts/generate-prerender-routes.mjs",
+    "prebuildrenga": "node scripts/generate-prerender-routes.mjs && node scripts/fetch-sitemap.mjs",
     "buildrenga": "npm run prebuildrenga && ng build --configuration=renga",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",

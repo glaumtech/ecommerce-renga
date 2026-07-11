@@ -1,0 +1,63 @@
+<div class="relative">
+  @if (canScrollPrev()) {
+    <button
+      type="button"
+      class="category-carousel-nav category-carousel-nav-prev hidden md:flex"
+      (click)="scroll('prev')"
+      aria-label="Previous categories"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+  }
+
+  @if (canScrollNext()) {
+    <button
+      type="button"
+      class="category-carousel-nav category-carousel-nav-next hidden md:flex"
+      (click)="scroll('next')"
+      aria-label="Next categories"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+  }
+
+  <div
+    #track
+    class="category-carousel-track"
+    (scroll)="onScroll()"
+    role="region"
+    aria-roledescription="carousel"
+    aria-label="Product categories"
+  >
+    @for (cat of categories(); track cat.id) {
+      <a
+        data-carousel-card
+        [routerLink]="categoryLink(cat)"
+        [queryParams]="categoryQueryParams(cat)"
+        class="category-carousel-card group block no-underline"
+      >
+        @if (cat.img) {
+          <img [src]="cat.img" [alt]="cat.imageAlt" class="category-carousel-image" loading="lazy" />
+        } @else {
+          <div class="category-carousel-placeholder" aria-hidden="true"></div>
+        }
+        <div class="category-carousel-overlay">
+          <h3 class="text-2xl font-serif font-bold text-white mb-1">{{ cat.title }}</h3>
+          <p class="text-amber-200 text-sm mb-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+            {{ cat.desc }}
+          </p>
+          <div class="flex items-center text-white text-sm font-semibold">
+            Explore Collection
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-1.5 group-hover:translate-x-1.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </div>
+        </div>
+      </a>
+    }
+  </div>
+</div>

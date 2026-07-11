@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { getCategoryHubByName } from '../../../core/constants/category-seo.constants';
 import { Product } from '../../../core/models/product.model';
 
 @Component({
@@ -20,8 +21,7 @@ import { Product } from '../../../core/models/product.model';
         @if (product().category) {
           <li class="inline-flex items-center">
             <a
-              [routerLink]="['/shop']"
-              [queryParams]="{ category: product().category }"
+              [routerLink]="categoryLink()"
               class="text-slate-500 no-underline hover:text-orange-600 transition-colors"
             >
               {{ product().category }}
@@ -38,4 +38,13 @@ import { Product } from '../../../core/models/product.model';
 })
 export class ProductBreadcrumbComponent {
   readonly product = input.required<Product>();
+
+  readonly categoryLink = computed(() => {
+    const category = this.product().category;
+    if (!category) {
+      return ['/shop'] as (string | Record<string, string>)[];
+    }
+    const hub = getCategoryHubByName(this.product().mainCategory || category);
+    return hub ? ['/shop', hub.slug] : ['/shop'];
+  });
 }

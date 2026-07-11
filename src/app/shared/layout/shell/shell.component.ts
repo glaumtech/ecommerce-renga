@@ -40,10 +40,22 @@ export class ShellComponent {
       if (!this.storeSeoService.loaded()) {
         return;
       }
-      if (isProductDetailPath(this.currentUrl())) {
+      if (this.shouldSkipStoreDefaults(this.currentUrl())) {
         return;
       }
       this.seoService.applyStoreDefaults(this.storeSeoService.settings());
     });
+  }
+
+  private shouldSkipStoreDefaults(url: string): boolean {
+    if (isProductDetailPath(url)) {
+      return true;
+    }
+    const path = url.split('?')[0];
+    if (path.startsWith('/shop') || path === '/about-us') {
+      return true;
+    }
+    const privatePaths = ['/cart', '/checkout', '/account', '/admin'];
+    return privatePaths.some((prefix) => path === prefix || path.startsWith(`${prefix}/`));
   }
 }

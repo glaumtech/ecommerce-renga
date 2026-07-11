@@ -1,6 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CartService } from '../../core/services/cart.service';
+import { SeoService } from '../../core/services/seo.service';
 import { OrderSummaryComponent } from '../../shared/components/order-summary/order-summary.component';
 import { AppCurrencyPipe } from '../../shared/pipes/app-currency.pipe';
 import { ProductImagePipe } from '../../shared/pipes/product-image.pipe';
@@ -11,6 +12,11 @@ import { ProductImagePipe } from '../../shared/pipes/product-image.pipe';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './cart.component.html',
 })
-export class CartComponent {
+export class CartComponent implements OnInit {
+  private readonly seoService = inject(SeoService);
   readonly cartService = inject(CartService);
+
+  ngOnInit(): void {
+    this.seoService.applyNoIndex('Shopping Cart');
+  }
 }

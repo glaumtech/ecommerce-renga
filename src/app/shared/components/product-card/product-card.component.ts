@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Product } from '../../../core/models/product.model';
 import { AppCurrencyPipe } from '../../pipes/app-currency.pipe';
@@ -14,7 +14,7 @@ import { ProductImagePipe } from '../../pipes/product-image.pipe';
         class="block no-underline text-inherit hover:no-underline"
       >
         <div class="relative aspect-[4/3] overflow-hidden bg-slate-50">
-          <img [src]="product().image | productImage" [alt]="product().name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <img [src]="product().image | productImage" [alt]="imageAlt()" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
           @if (product().rating >= 4.8) {
             <span class="absolute top-3 left-3 bg-amber-500 text-white text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider shadow-sm">Bestseller</span>
           }
@@ -44,6 +44,18 @@ import { ProductImagePipe } from '../../pipes/product-image.pipe';
 export class ProductCardComponent {
   readonly product = input.required<Product>();
   readonly addToCart = output<Product>();
+
+  readonly imageAlt = computed(() => {
+    const p = this.product();
+    const parts = [p.name];
+    if (p.category) {
+      parts.push(p.category);
+    }
+    if (p.brand) {
+      parts.push(p.brand);
+    }
+    return parts.join(' - ');
+  });
 
   onAddToCart(event: Event): void {
     event.preventDefault();

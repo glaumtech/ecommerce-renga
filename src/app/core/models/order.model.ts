@@ -90,3 +90,8 @@ export function orderStatusMessage(status: string): string {
       return 'Your order is being processed.';
   }
 }
+
+export function canUserCancelOrder(status: string): boolean {
+  const normalized = normalizeOrderStatus(status);
+  return normalized === 'Pending' || normalized === 'Accepted';
+}

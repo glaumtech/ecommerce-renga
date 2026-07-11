@@ -1,7 +1,8 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { SeoService } from '../../../core/services/seo.service';
 
 @Component({
   selector: 'app-login',
@@ -9,11 +10,12 @@ import { AuthService } from '../../../core/services/auth.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './login.component.html',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
+  private readonly seoService = inject(SeoService);
 
   readonly error = signal<string | null>(null);
   readonly loading = signal(false);
@@ -23,6 +25,10 @@ export class LoginComponent {
     username: ['', Validators.required],
     password: ['', Validators.required],
   });
+
+  ngOnInit(): void {
+    this.seoService.applyNoIndex('Sign In');
+  }
 
   submit(): void {
     if (this.form.invalid) {

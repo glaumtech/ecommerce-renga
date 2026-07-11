@@ -7,7 +7,15 @@ const projectRoot = join(__dirname, '..');
 const apiUrl = (process.env.STORE_API_URL || 'https://ghopon.com/trueup-lite-renga').replace(/\/+$/, '');
 const outputPath = join(projectRoot, 'prerendered-routes.json');
 
-const staticRoutes = ['/', '/shop', '/login', '/register', '/cart', '/about-us'];
+const staticRoutes = [
+  '/',
+  '/shop',
+  '/shop/brassware',
+  '/shop/herbal-health',
+  '/shop/herbal-beauty',
+  '/about-us',
+  '/cart',
+];
 
 async function fetchProductSlugs() {
   try {

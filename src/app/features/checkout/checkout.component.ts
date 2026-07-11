@@ -1,11 +1,14 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../core/services/auth.service';
+import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs';
 import { CartService } from '../../core/services/cart.service';
-import { OrderHttpError, OrderService } from '../../core/services/order.service';
+import { OrderService, SavedCheckoutAddress } from '../../core/services/order.service';
+import { SeoService } from '../../core/services/seo.service';
 import { PAYMENT_METHOD_COD } from '../../core/models/order.model';
 import { AppCurrencyPipe } from '../../shared/pipes/app-currency.pipe';
+import { ProductImagePipe } from '../../shared/pipes/product-image.pipe';
 
 const MOBILE_PATTERN = /^[6-9]\d{9}$/;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -20,7 +23,7 @@ function optionalEmail(control: AbstractControl): ValidationErrors | null {
 
 @Component({
   selector: 'app-checkout',
-  imports: [ReactiveFormsModule, AppCurrencyPipe, RouterLink],
+  imports: [ReactiveFormsModule, AppCurrencyPipe, ProductImagePipe, RouterLink],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './checkout.component.html',
 })
@@ -28,16 +31,19 @@ export class CheckoutComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly cartService = inject(CartService);
   private readonly orderService = inject(OrderService);
-  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly seoService = inject(SeoService);
 
+  readonly cartItems = this.cartService.items;
   readonly cartSubtotal = this.cartService.cartTotal;
   readonly shippingFee = this.cartService.shippingFee;
   readonly cartTotal = this.cartService.orderTotal;
   readonly cartCount = this.cartService.cartCount;
   readonly loading = this.orderService.loading;
+  readonly addressesLoading = this.orderService.addressesLoading;
+  readonly savedAddresses = this.orderService.savedAddresses;
   readonly checkoutError = this.orderService.error;
-  readonly orderSuccessRef = signal<string | null>(null);
+  readonly selectedAddressId = signal<'new' | string>('new');
 
   readonly paymentMethod = PAYMENT_METHOD_COD;
   readonly inputClass =
@@ -55,14 +61,30 @@ export class CheckoutComponent implements OnInit {
   });
 
   ngOnInit(): void {
+    this.seoService.applyNoIndex('Checkout');
     if (this.cartService.items().length === 0) {
       void this.router.navigate(['/cart']);
+      return;
     }
+
+    const storedMobile = this.orderService.lookupMobile();
+    if (storedMobile && MOBILE_PATTERN.test(storedMobile)) {
+      this.form.patchValue({ mobile: storedMobile });
+      this.loadSavedAddresses(storedMobile);
+    }
+
+    this.form.controls.mobile.valueChanges
+      .pipe(
+        map((value) => value.trim()),
+        debounceTime(400),
+        distinctUntilChanged(),
+        filter((value) => MOBILE_PATTERN.test(value)),
+        takeUntilDestroyed()
+      )
+      .subscribe((mobile) => this.loadSavedAddresses(mobile));
   }
 
   handleCheckout(): void {
-    this.orderSuccessRef.set(null);
-
     if (this.cartService.items().length === 0) {
       void this.router.navigate(['/cart']);
       return;
@@ -75,12 +97,13 @@ export class CheckoutComponent implements OnInit {
 
     const value = this.form.getRawValue();
     const email = value.email.trim();
+    const mobile = value.mobile.trim();
 
     this.orderService
       .placeOrder({
         firstName: value.firstName,
         lastName: value.lastName,
-        mobile: value.mobile.trim(),
+        mobile,
         email: email || undefined,
         streetAddress: value.streetAddress,
         city: value.city,
@@ -90,19 +113,40 @@ export class CheckoutComponent implements OnInit {
         items: this.cartService.getCheckoutItems(),
       })
       .subscribe({
-        next: (order) => {
+        next: () => {
           this.cartService.clear();
-          this.orderService.loadOrders();
-          this.orderSuccessRef.set(order.orderRef);
+          this.orderService.setLookupMobile(mobile);
           void this.router.navigate(['/account']);
         },
-        error: (err: OrderHttpError) => {
-          if (err.status === 401) {
-            this.authService.clearSession();
-            void this.router.navigate(['/login'], { queryParams: { returnUrl: '/checkout' } });
-          }
-        },
       });
+  }
+
+  selectSavedAddress(address: SavedCheckoutAddress): void {
+    this.selectedAddressId.set(address.id);
+    this.applyAddressToForm(address);
+  }
+
+  selectNewAddress(): void {
+    this.selectedAddressId.set('new');
+    this.form.patchValue({
+      firstName: '',
+      lastName: '',
+      email: '',
+      streetAddress: '',
+      city: '',
+      state: '',
+      zipCode: '',
+    });
+  }
+
+  formatAddress(address: SavedCheckoutAddress): string {
+    return `${address.streetAddress}, ${address.city}, ${address.state} ${address.zipCode}`;
+  }
+
+  formatAddressName(address: SavedCheckoutAddress): string {
+    const first = address.firstName ?? '';
+    const last = address.lastName ?? '';
+    return `${first} ${last}`.trim() || 'Saved address';
   }
 
   fieldError(controlName: keyof typeof this.form.controls): string | null {
@@ -129,5 +173,27 @@ export class CheckoutComponent implements OnInit {
       return 'Enter a valid email address.';
     }
     return null;
+  }
+
+  private loadSavedAddresses(mobile: string): void {
+    this.orderService.loadAddressesByMobile(mobile).subscribe((addresses) => {
+      if (addresses.length > 0) {
+        this.selectSavedAddress(addresses[0]);
+      } else {
+        this.selectNewAddress();
+      }
+    });
+  }
+
+  private applyAddressToForm(address: SavedCheckoutAddress): void {
+    this.form.patchValue({
+      firstName: address.firstName ?? '',
+      lastName: address.lastName ?? '',
+      email: address.email ?? '',
+      streetAddress: address.streetAddress,
+      city: address.city,
+      state: address.state,
+      zipCode: address.zipCode,
+    });
   }
 }

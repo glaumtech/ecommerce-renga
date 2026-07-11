@@ -6,8 +6,6 @@ export const RESERVED_ROUTE_PATHS = new Set([
   'account',
   'about-us',
   'admin',
-  'login',
-  'register',
 ]);
 
 export function isReservedRoutePath(path: string): boolean {

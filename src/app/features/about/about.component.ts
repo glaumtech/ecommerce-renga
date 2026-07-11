@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { Meta, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
+import { SeoService } from '../../core/services/seo.service';
+import { StoreSeoService } from '../../core/services/store-seo.service';
 
 interface TimelineMilestone {
   year: string;
@@ -24,8 +25,8 @@ interface Pillar {
   styleUrl: './about.component.css',
 })
 export class AboutComponent implements OnInit {
-  private readonly title = inject(Title);
-  private readonly meta = inject(Meta);
+  private readonly seoService = inject(SeoService);
+  private readonly storeSeoService = inject(StoreSeoService);
 
   readonly founderImageSrc = 'founder-renganathan.jpg';
   readonly founderImageLoaded = signal(false);
@@ -90,12 +91,7 @@ export class AboutComponent implements OnInit {
   ];
 
   ngOnInit(): void {
-    this.title.setTitle('About Us | Sri Renga Traders');
-    this.meta.updateTag({
-      name: 'description',
-      content:
-        'Discover Sri Renga Traders — rooted in Srirangam, Trichy, offering pure pooja essentials, natural herbal wellness, and premium sacred brassware with devotion since 2016.',
-    });
+    this.seoService.applyAboutSeo(this.storeSeoService.settings());
   }
 
   onFounderImageLoad(): void {

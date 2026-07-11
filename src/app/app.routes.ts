@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from './core/guards/admin.guard';
-import { authGuard } from './core/guards/auth.guard';
 import { productSlugGuard } from './core/guards/product-slug.guard';
 import { productSeoResolver } from './core/resolvers/product-seo.resolver';
+import { categoryHubGuard } from './core/guards/category-hub.guard';
 import { ShellComponent } from './shared/layout/shell/shell.component';
 
 export const routes: Routes = [
@@ -41,11 +41,13 @@ export const routes: Routes = [
   },
   {
     path: 'login',
-    loadComponent: () => import('./features/auth/login/login.component').then((m) => m.LoginComponent),
+    redirectTo: 'account',
+    pathMatch: 'full',
   },
   {
     path: 'register',
-    loadComponent: () => import('./features/auth/register/register.component').then((m) => m.RegisterComponent),
+    redirectTo: 'account',
+    pathMatch: 'full',
   },
   {
     path: '',
@@ -54,6 +56,11 @@ export const routes: Routes = [
       {
         path: '',
         loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent),
+      },
+      {
+        path: 'shop/:categorySlug',
+        canActivate: [categoryHubGuard],
+        loadComponent: () => import('./features/shop/shop.component').then((m) => m.ShopComponent),
       },
       {
         path: 'shop',
@@ -65,12 +72,10 @@ export const routes: Routes = [
       },
       {
         path: 'checkout',
-        canActivate: [authGuard],
         loadComponent: () => import('./features/checkout/checkout.component').then((m) => m.CheckoutComponent),
       },
       {
         path: 'account',
-        canActivate: [authGuard],
         loadComponent: () => import('./features/account/account.component').then((m) => m.AccountComponent),
       },
       {
