@@ -36,6 +36,13 @@ import { FulfillmentTicketComponent } from './components/fulfillment-ticket.comp
               >
                 Category Master
               </a>
+              <a
+                routerLink="/admin/dashboard/video-ads"
+                routerLinkActive="bg-blue-600 text-white"
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 text-xs font-semibold hover:bg-slate-50 transition-all"
+              >
+                Video Ads
+              </a>
             </nav>
             <div class="pt-6 border-t border-slate-100 flex flex-col gap-2">
               <span class="text-xs bg-amber-50 border border-amber-100 text-amber-900 px-3 py-2 rounded-xl font-bold text-center">

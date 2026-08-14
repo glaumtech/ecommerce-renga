@@ -1,0 +1,130 @@
+.video-ads-track {
+  display: flex;
+  gap: 1.25rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 0.35rem 0.15rem 0.5rem;
+}
+
+.video-ads-track::-webkit-scrollbar {
+  display: none;
+}
+
+.video-ads-card {
+  position: relative;
+  flex: 0 0 auto;
+  width: min(42vw, 11.5rem);
+  aspect-ratio: 9 / 16;
+  border-radius: 1rem;
+  overflow: hidden;
+  scroll-snap-align: start;
+  background: #1e0a02;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.12);
+  transition: box-shadow 0.3s ease;
+}
+
+.video-ads-card.is-playing {
+  box-shadow: 0 0 0 3px #f59e0b, 0 20px 25px -5px rgb(0 0 0 / 0.18);
+}
+
+.video-ads-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  cursor: pointer;
+}
+
+.video-ads-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 1rem;
+  background: linear-gradient(to top, rgb(30 10 2 / 0.92), rgb(0 0 0 / 0.15) 45%, transparent 70%);
+  pointer-events: none;
+}
+
+.video-ads-mute,
+.video-ads-cta {
+  pointer-events: auto;
+}
+
+.video-ads-mute {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.18);
+  color: #fff;
+  border: 1px solid rgb(255 255 255 / 0.25);
+  backdrop-filter: blur(8px);
+}
+
+.video-ads-progress {
+  position: absolute;
+  left: 0.6rem;
+  right: 0.6rem;
+  bottom: 0.4rem;
+  height: 3px;
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.25);
+  overflow: hidden;
+}
+
+.video-ads-progress span {
+  display: block;
+  height: 100%;
+  background: #f59e0b;
+  border-radius: inherit;
+}
+
+.video-ads-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid rgb(251 191 36 / 0.35);
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.95);
+  color: #92400e;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  transform: translateY(-50%);
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.video-ads-nav:hover {
+  background: #fffbeb;
+  border-color: #f59e0b;
+  color: #b45309;
+}
+
+.video-ads-nav-prev {
+  left: 0.75rem;
+}
+
+.video-ads-nav-next {
+  right: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .video-ads-card {
+    width: 14rem;
+  }
+
+  .video-ads-track {
+    gap: 1.5rem;
+  }
+}

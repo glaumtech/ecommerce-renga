@@ -35,6 +35,13 @@ export const routes: Routes = [
                 (m) => m.AdminCategoriesComponent
               ),
           },
+          {
+            path: 'video-ads',
+            loadComponent: () =>
+              import('./features/admin/video-ads/admin-video-ads.component').then(
+                (m) => m.AdminVideoAdsComponent
+              ),
+          },
         ],
       },
     ],

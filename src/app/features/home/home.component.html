@@ -49,6 +49,19 @@
     <div class="hero-bottom-fade absolute inset-x-0 bottom-0 pointer-events-none z-[2]" aria-hidden="true"></div>
   </div>
 
+  @if (videoAds().length > 0) {
+    <div class="bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 md:pt-14 pb-6">
+        <div class="text-center mb-12">
+          <span class="text-amber-600 text-xs font-bold tracking-widest uppercase block mb-2">Heritage in Motion</span>
+          <h2 class="text-3xl sm:text-4xl font-serif font-bold text-slate-800 mb-3">Watch Our Products</h2>
+          <div class="w-16 h-1 bg-amber-500 mx-auto rounded-full"></div>
+        </div>
+        <app-video-ads-carousel [ads]="videoAds()" />
+      </div>
+    </div>
+  }
+
   <!-- Category Highlights -->
   <div class="bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 md:pt-14 pb-20">

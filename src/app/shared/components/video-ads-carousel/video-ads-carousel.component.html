@@ -1,0 +1,102 @@
+<div class="relative">
+  @if (canScrollPrev()) {
+    <button
+      type="button"
+      class="video-ads-nav video-ads-nav-prev hidden md:flex"
+      (click)="scroll('prev')"
+      aria-label="Previous product videos"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+  }
+
+  @if (canScrollNext()) {
+    <button
+      type="button"
+      class="video-ads-nav video-ads-nav-next hidden md:flex"
+      (click)="scroll('next')"
+      aria-label="Next product videos"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+  }
+
+  <div
+    #track
+    class="video-ads-track"
+    (scroll)="onScroll()"
+    role="region"
+    aria-roledescription="carousel"
+    aria-label="Product video ads"
+  >
+    @for (ad of ads(); track ad.id; let i = $index) {
+      <article
+        data-carousel-card
+        class="video-ads-card"
+        [class.is-playing]="playingIndex() === i"
+      >
+        <video
+          #reel
+          [src]="ad.videoUrl"
+          class="video-ads-media"
+          playsinline
+          preload="metadata"
+          [attr.webkit-playsinline]="'true'"
+          [muted]="muted()"
+          (ended)="onEnded(i)"
+          (timeupdate)="onTimeUpdate(i, $event)"
+          (click)="onVideoClick(i, $event)"
+        ></video>
+
+        <div class="video-ads-overlay">
+          @if (playingIndex() === i) {
+            <button
+              type="button"
+              class="video-ads-mute"
+              (click)="toggleMute($event)"
+              [attr.aria-label]="muted() ? 'Unmute video' : 'Mute video'"
+            >
+              @if (muted()) {
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                  <line x1="23" y1="9" x2="17" y2="15"></line>
+                  <line x1="17" y1="9" x2="23" y2="15"></line>
+                </svg>
+              } @else {
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+              }
+            </button>
+          }
+
+          <a
+            [routerLink]="['/', ad.productSlug]"
+            class="video-ads-cta no-underline"
+            (click)="$event.stopPropagation()"
+          >
+            <h3 class="text-lg font-serif font-bold text-white leading-tight mb-1">{{ ad.title }}</h3>
+            <span class="inline-flex items-center text-amber-200 text-xs font-semibold">
+              Shop now
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 ml-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+              </svg>
+            </span>
+          </a>
+        </div>
+
+        @if (playingIndex() === i) {
+          <div class="video-ads-progress" aria-hidden="true">
+            <span [style.width.%]="progress()"></span>
+          </div>
+        }
+      </article>
+    }
+  </div>
+</div>
