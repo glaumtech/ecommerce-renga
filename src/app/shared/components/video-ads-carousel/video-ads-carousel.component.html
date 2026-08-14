@@ -38,6 +38,7 @@
         data-carousel-card
         class="video-ads-card"
         [class.is-playing]="playingIndex() === i"
+        (click)="onVideoClick(i)"
       >
         <video
           #reel
@@ -49,7 +50,6 @@
           [muted]="muted()"
           (ended)="onEnded(i)"
           (timeupdate)="onTimeUpdate(i, $event)"
-          (click)="onVideoClick(i, $event)"
         ></video>
 
         <div class="video-ads-overlay">

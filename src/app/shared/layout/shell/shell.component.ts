@@ -1,5 +1,6 @@
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { isPlatformBrowser } from '@angular/common';
+import { ChangeDetectionStrategy, Component, PLATFORM_ID, effect, inject } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter, map } from 'rxjs';
 import { isProductDetailPath } from '../../../core/constants/reserved-routes';
@@ -26,6 +27,7 @@ export class ShellComponent {
   private readonly storeSeoService = inject(StoreSeoService);
   private readonly seoService = inject(SeoService);
   private readonly router = inject(Router);
+  private readonly platformId = inject(PLATFORM_ID);
 
   private readonly currentUrl = toSignal(
     this.router.events.pipe(
@@ -36,6 +38,17 @@ export class ShellComponent {
   );
 
   constructor() {
+    if (isPlatformBrowser(this.platformId)) {
+      this.router.events
+        .pipe(
+          filter((event): event is NavigationEnd => event instanceof NavigationEnd),
+          takeUntilDestroyed()
+        )
+        .subscribe(() => {
+          window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+        });
+    }
+
     effect(() => {
       if (!this.storeSeoService.loaded()) {
         return;

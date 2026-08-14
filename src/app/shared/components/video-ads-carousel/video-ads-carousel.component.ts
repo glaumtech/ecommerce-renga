@@ -83,7 +83,7 @@ export class VideoAdsCarouselComponent {
     }
     const next = (index + 1) % count;
     this.userPaused.set(false);
-    void this.playIndex(next);
+    void this.playIndex(next, true);
   }
 
   onTimeUpdate(index: number, event: Event): void {
@@ -98,11 +98,10 @@ export class VideoAdsCarouselComponent {
     this.progress.set((video.currentTime / video.duration) * 100);
   }
 
-  onVideoClick(index: number, event: Event): void {
-    event.preventDefault();
+  onVideoClick(index: number): void {
     if (index !== this.playingIndex()) {
       this.userPaused.set(false);
-      void this.playIndex(index);
+      void this.playIndex(index, true);
       return;
     }
     const video = this.videoAt(index);
@@ -138,18 +137,18 @@ export class VideoAdsCarouselComponent {
         const visible = entries.some((entry) => entry.isIntersecting && entry.intersectionRatio >= 0.35);
         this.sectionVisible = visible;
         if (visible && !this.userPaused()) {
-          void this.playIndex(this.playingIndex());
+          void this.playIndex(this.playingIndex(), false);
         } else if (!visible) {
           this.pauseAll();
         }
       },
-      { threshold: [0, 0.35, 0.7] }
+      { threshold: [0.35] }
     );
     this.observer.observe(this.hostRef.nativeElement);
     this.updateScrollState();
   }
 
-  private async playIndex(index: number): Promise<void> {
+  private async playIndex(index: number, scrollTrack = false): Promise<void> {
     const videos = this.reels();
     if (!videos.length) {
       return;
@@ -166,9 +165,9 @@ export class VideoAdsCarouselComponent {
       }
     });
 
-    const trackEl = this.track()?.nativeElement;
-    const card = trackEl?.querySelectorAll<HTMLElement>('[data-carousel-card]')[safeIndex];
-    card?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    if (scrollTrack) {
+      this.scrollTrackToIndex(safeIndex);
+    }
 
     const video = videos[safeIndex].nativeElement;
     video.muted = this.muted();
@@ -195,6 +194,16 @@ export class VideoAdsCarouselComponent {
         video.pause();
       }
     }
+  }
+
+  private scrollTrackToIndex(index: number): void {
+    const trackEl = this.track()?.nativeElement;
+    const card = trackEl?.querySelectorAll<HTMLElement>('[data-carousel-card]')[index];
+    if (!trackEl || !card) {
+      return;
+    }
+    const left = card.offsetLeft - (trackEl.clientWidth - card.offsetWidth) / 2;
+    trackEl.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
   }
 
   private videoAt(index: number): HTMLVideoElement | null {
