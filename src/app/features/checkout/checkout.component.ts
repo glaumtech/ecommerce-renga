@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs';
@@ -7,11 +7,13 @@ import { CartService } from '../../core/services/cart.service';
 import { OrderService, SavedCheckoutAddress } from '../../core/services/order.service';
 import { SeoService } from '../../core/services/seo.service';
 import { PAYMENT_METHOD_COD } from '../../core/models/order.model';
+import { calculateShippingFee } from '../../core/utils/shipping-fee.util';
 import { AppCurrencyPipe } from '../../shared/pipes/app-currency.pipe';
 import { ProductImagePipe } from '../../shared/pipes/product-image.pipe';
 
 const MOBILE_PATTERN = /^[6-9]\d{9}$/;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const PIN_PATTERN = /^\d{6}$/;
 
 function optionalEmail(control: AbstractControl): ValidationErrors | null {
   const value = (control.value as string)?.trim();
@@ -36,8 +38,6 @@ export class CheckoutComponent implements OnInit {
 
   readonly cartItems = this.cartService.items;
   readonly cartSubtotal = this.cartService.cartTotal;
-  readonly shippingFee = this.cartService.shippingFee;
-  readonly cartTotal = this.cartService.orderTotal;
   readonly cartCount = this.cartService.cartCount;
   readonly loading = this.orderService.loading;
   readonly addressesLoading = this.orderService.addressesLoading;
@@ -57,8 +57,14 @@ export class CheckoutComponent implements OnInit {
     streetAddress: ['', Validators.required],
     city: ['', Validators.required],
     state: ['', Validators.required],
-    zipCode: ['', Validators.required],
+    zipCode: ['', [Validators.required, Validators.pattern(PIN_PATTERN)]],
   });
+
+  private readonly zipCode = toSignal(this.form.controls.zipCode.valueChanges, {
+    initialValue: this.form.controls.zipCode.value,
+  });
+  readonly shippingFee = computed(() => calculateShippingFee(this.zipCode()));
+  readonly cartTotal = computed(() => this.cartSubtotal() + this.shippingFee());
 
   ngOnInit(): void {
     this.seoService.applyNoIndex('Checkout');
@@ -108,7 +114,7 @@ export class CheckoutComponent implements OnInit {
         streetAddress: value.streetAddress,
         city: value.city,
         state: value.state,
-        zipCode: value.zipCode,
+        zipCode: value.zipCode.trim(),
         paymentMethod: PAYMENT_METHOD_COD,
         items: this.cartService.getCheckoutItems(),
       })
@@ -171,6 +177,9 @@ export class CheckoutComponent implements OnInit {
     }
     if (controlName === 'email' && control.errors['email']) {
       return 'Enter a valid email address.';
+    }
+    if (controlName === 'zipCode' && control.errors['pattern']) {
+      return 'Enter a valid 6-digit PIN code.';
     }
     return null;
   }

@@ -83,6 +83,11 @@ export const routes: Routes = [
         loadComponent: () => import('./features/about/about.component').then((m) => m.AboutComponent),
       },
       {
+        path: 'return-policy',
+        loadComponent: () =>
+          import('./features/return-policy/return-policy.component').then((m) => m.ReturnPolicyComponent),
+      },
+      {
         path: ':slug',
         canActivate: [productSlugGuard],
         resolve: { seo: productSeoResolver },

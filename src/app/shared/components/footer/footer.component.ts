@@ -49,6 +49,7 @@ import { ProductService } from '../../../core/services/product.service';
           <h4 class="text-white font-semibold mb-4">Customer Care</h4>
           <ul class="space-y-2 text-sm">
             <li><a routerLink="/about-us" class="hover:text-amber-500 transition-colors">About Us</a></li>
+            <li><a routerLink="/return-policy" class="hover:text-amber-500 transition-colors">Return Policy</a></li>
             <li><a routerLink="/account" class="hover:text-amber-500 transition-colors">Track Order</a></li>
             <li><a href="#" class="hover:text-amber-500 transition-colors">Shipping Policy</a></li>
             <li><a href="#" class="hover:text-amber-500 transition-colors">Contact Us</a></li>

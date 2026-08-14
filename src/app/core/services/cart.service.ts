@@ -3,9 +3,9 @@ import { Product } from '../models/product.model';
 import { CartItem } from '../models/cart.model';
 import { resolveProductImageUrl } from '../utils/product-image.util';
 import { getLocalItem, isBrowserPlatform, setLocalItem } from '../utils/browser-storage.util';
+import { BASE_SHIPPING_FEE } from '../utils/shipping-fee.util';
 
 const CART_STORAGE_KEY = 'ananda_cart';
-const SHIPPING_FEE = 60;
 
 @Injectable({ providedIn: 'root' })
 export class CartService {
@@ -18,8 +18,8 @@ export class CartService {
   readonly cartCount = computed(() =>
     this.cart().reduce((sum, item) => sum + item.quantity, 0)
   );
-  readonly shippingFee = SHIPPING_FEE;
-  readonly orderTotal = computed(() => this.cartTotal() + SHIPPING_FEE);
+  readonly shippingFee = BASE_SHIPPING_FEE;
+  readonly orderTotal = computed(() => this.cartTotal() + BASE_SHIPPING_FEE);
 
   private readonly injector = inject(Injector);
 

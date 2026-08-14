@@ -44,7 +44,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
           </svg>
         </div>
         <p class="text-xs font-semibold text-slate-800">Easy Returns</p>
-        <p class="text-[10px] text-slate-500 mt-1">7-day policy</p>
+        <p class="text-[10px] text-slate-500 mt-1">3-day replacement</p>
       </div>
     </div>
   `,

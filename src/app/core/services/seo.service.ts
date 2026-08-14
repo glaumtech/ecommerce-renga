@@ -85,6 +85,28 @@ export class SeoService {
     this.removeJsonLd('breadcrumb');
   }
 
+  applyReturnPolicySeo(settings: StoreSeoSettings): void {
+    const siteName = settings.siteName || 'Sri Renga Traders';
+    const title = `Return & Replacement Policy | ${siteName}`;
+    const description =
+      'Products can be replaced within 3 days of delivery if damaged, defective, or incorrect. Read our return and replacement policy at Sri Renga Traders.';
+    const canonicalUrl = `${settings.siteUrl?.replace(/\/+$/, '') || 'https://rengaa.in'}/return-policy`;
+
+    this.title.setTitle(title);
+    this.meta.updateTag({ name: 'description', content: description });
+    this.meta.updateTag({ name: 'robots', content: 'index' });
+    this.meta.updateTag({ property: 'og:title', content: title });
+    this.meta.updateTag({ property: 'og:description', content: description });
+    this.meta.updateTag({ property: 'og:type', content: 'website' });
+    this.meta.updateTag({ property: 'og:url', content: canonicalUrl });
+
+    this.setCanonical(canonicalUrl);
+    this.applySiteMetaTags(settings);
+    this.setOrganizationJsonLd(settings);
+    this.removeJsonLd('product');
+    this.removeJsonLd('breadcrumb');
+  }
+
   applyAboutSeo(settings: StoreSeoSettings): void {
     const siteName = settings.siteName || 'Sri Renga Traders';
     const title = `About Us | ${siteName}, Trichy`;

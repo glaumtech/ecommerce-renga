@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, effect, input, output, signal } from '@angular/core';
 import { AppCurrencyPipe } from '../../../shared/pipes/app-currency.pipe';
-import { AdminOrder, OrderStatus, SHIPPING_FEE } from '../../../core/models/order.model';
+import { AdminOrder, OrderStatus } from '../../../core/models/order.model';
 
 @Component({
   selector: 'app-order-detail-panel',
@@ -86,7 +86,7 @@ import { AdminOrder, OrderStatus, SHIPPING_FEE } from '../../../core/models/orde
               }
               <div class="pt-4 border-t border-dashed border-slate-100 flex justify-between items-center text-sm">
                 <span class="text-slate-400 font-medium">Delivery Surcharges</span>
-                <span class="font-semibold text-slate-800">{{ shippingFee | appCurrency }}</span>
+                <span class="font-semibold text-slate-800">{{ (order.shippingFee ?? 0) | appCurrency }}</span>
               </div>
               <div class="flex justify-between items-center text-base font-extrabold text-slate-800 pt-2">
                 <span>Total Bill</span>
@@ -138,7 +138,6 @@ export class OrderDetailPanelComponent {
   readonly screenshotMode = output<void>();
   readonly notesChange = output<string>();
 
-  readonly shippingFee = SHIPPING_FEE;
   readonly statuses: OrderStatus[] = ['Pending', 'Accepted', 'Shipped', 'Delivered', 'Cancelled'];
 
   private notesTimer: ReturnType<typeof setTimeout> | null = null;

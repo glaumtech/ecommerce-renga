@@ -53,7 +53,7 @@ export class ProductFaqComponent {
     },
     {
       question: 'What is your return policy?',
-      answer: 'Unopened items can be returned within 7 days of delivery. Contact support to initiate a return.',
+      answer: 'Products can be replaced within 3 days of delivery if damaged, defective, or incorrect. See our Return Policy for details.',
     },
     {
       question: 'Do you ship internationally?',
