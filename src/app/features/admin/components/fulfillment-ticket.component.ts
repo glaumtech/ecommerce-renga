@@ -130,6 +130,8 @@ export class FulfillmentTicketComponent {
         return `${base} bg-indigo-400/20 text-indigo-100`;
       case 'Delivered':
         return `${base} bg-green-400/20 text-green-100`;
+      case 'Paid':
+        return `${base} bg-emerald-400/20 text-emerald-100`;
       case 'Cancelled':
         return `${base} bg-red-400/20 text-red-100`;
       default:

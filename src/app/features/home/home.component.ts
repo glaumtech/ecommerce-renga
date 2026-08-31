@@ -3,15 +3,17 @@ import { RouterLink } from '@angular/router';
 import { getCategoryHubByName } from '../../core/constants/category-seo.constants';
 import { CartService } from '../../core/services/cart.service';
 import { ProductService } from '../../core/services/product.service';
+import { GoogleReviewService } from '../../core/services/google-review.service';
 import { VideoAdService } from '../../core/services/video-ad.service';
 import { CategoryCarouselComponent } from '../../shared/components/category-carousel/category-carousel.component';
+import { GoogleReviewsCarouselComponent } from '../../shared/components/google-reviews-carousel/google-reviews-carousel.component';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { ProductCardComponent } from '../../shared/components/product-card/product-card.component';
 import { VideoAdsCarouselComponent } from '../../shared/components/video-ads-carousel/video-ads-carousel.component';
 
 @Component({
   selector: 'app-home',
-  imports: [RouterLink, CategoryCarouselComponent, ProductCardComponent, LoadingSpinnerComponent, VideoAdsCarouselComponent],
+  imports: [RouterLink, CategoryCarouselComponent, GoogleReviewsCarouselComponent, ProductCardComponent, LoadingSpinnerComponent, VideoAdsCarouselComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
@@ -20,6 +22,7 @@ export class HomeComponent implements OnInit {
   private readonly productService = inject(ProductService);
   private readonly cartService = inject(CartService);
   private readonly videoAdService = inject(VideoAdService);
+  private readonly googleReviewService = inject(GoogleReviewService);
 
   readonly loading = this.productService.loading;
   readonly featuredProducts = computed(() => this.productService.products().slice(0, 4));
@@ -43,6 +46,7 @@ export class HomeComponent implements OnInit {
     this.productService.loadCategories();
     this.productService.loadProducts();
     this.videoAdService.load();
+    this.googleReviewService.load();
   }
 
   addToCart(product: Parameters<CartService['addToCart']>[0]): void {

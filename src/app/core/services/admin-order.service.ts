@@ -43,7 +43,7 @@ export class AdminOrderService {
   readonly fulfillmentScreenshotMode = signal(false);
 
   readonly statusCounts = computed(() => {
-    const counts = { Pending: 0, Accepted: 0, Shipped: 0, Delivered: 0, Cancelled: 0 };
+    const counts = { Pending: 0, Accepted: 0, Shipped: 0, Delivered: 0, Paid: 0, Cancelled: 0 };
     for (const order of this.orders()) {
       const status = normalizeOrderStatus(order.status);
       if (status in counts) {

@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   selector: 'app-order-metrics',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
       <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
         <p class="text-slate-400 text-[11px] uppercase tracking-wider font-extrabold mb-1">Pending Orders</p>
         <p class="text-3xl font-bold text-amber-600">{{ counts().Pending }}</p>
@@ -18,8 +18,12 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         <p class="text-3xl font-bold text-indigo-600">{{ counts().Shipped }}</p>
       </div>
       <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
-        <p class="text-slate-400 text-[11px] uppercase tracking-wider font-extrabold mb-1">Completed</p>
+        <p class="text-slate-400 text-[11px] uppercase tracking-wider font-extrabold mb-1">Delivered</p>
         <p class="text-3xl font-bold text-green-600">{{ counts().Delivered }}</p>
+      </div>
+      <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+        <p class="text-slate-400 text-[11px] uppercase tracking-wider font-extrabold mb-1">Paid</p>
+        <p class="text-3xl font-bold text-emerald-600">{{ counts().Paid }}</p>
       </div>
       <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
         <p class="text-slate-400 text-[11px] uppercase tracking-wider font-extrabold mb-1">Cancelled</p>
@@ -34,6 +38,7 @@ export class OrderMetricsComponent {
     Accepted: number;
     Shipped: number;
     Delivered: number;
+    Paid: number;
     Cancelled: number;
   }>();
 }

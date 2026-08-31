@@ -40,6 +40,8 @@ import { AdminOrder } from '../../../core/models/order.model';
                 [class.text-indigo-800]="order.status === 'Shipped'"
                 [class.bg-green-100]="order.status === 'Delivered'"
                 [class.text-green-800]="order.status === 'Delivered'"
+                [class.bg-emerald-100]="order.status === 'Paid'"
+                [class.text-emerald-800]="order.status === 'Paid'"
                 [class.bg-red-100]="order.status === 'Cancelled'"
                 [class.text-red-800]="order.status === 'Cancelled'"
               >

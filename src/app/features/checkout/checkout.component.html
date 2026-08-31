@@ -31,6 +31,17 @@
                   [class]="inputClass"
                 />
                 <p class="min-h-4 text-xs text-red-600 mt-1">{{ fieldError('mobile') ?? '' }}</p>
+                @if (!fieldError('mobile') && addressesLoading()) {
+                  <p class="text-xs text-slate-500 -mt-2">Looking up saved details for this number...</p>
+                } @else if (!fieldError('mobile') && savedAddresses().length > 0) {
+                  <p class="text-xs text-amber-700 -mt-2">
+                    @if (restoredSession()) {
+                      Signed in{{ recognizedName() ? ' as ' + recognizedName() : '' }}. We loaded your saved address.
+                    } @else {
+                      Welcome back{{ recognizedName() ? ', ' + recognizedName() : '' }}. We loaded your saved address.
+                    }
+                  </p>
+                }
               </div>
 
               @if (addressesLoading()) {

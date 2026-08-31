@@ -2,8 +2,9 @@ import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } 
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { debounceTime, distinctUntilChanged, filter, map } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, of, switchMap } from 'rxjs';
 import { CartService } from '../../core/services/cart.service';
+import { AuthService } from '../../core/services/auth.service';
 import { OrderService, SavedCheckoutAddress } from '../../core/services/order.service';
 import { SeoService } from '../../core/services/seo.service';
 import { PAYMENT_METHOD_COD } from '../../core/models/order.model';
@@ -33,6 +34,7 @@ export class CheckoutComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly cartService = inject(CartService);
   private readonly orderService = inject(OrderService);
+  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly seoService = inject(SeoService);
 
@@ -65,6 +67,20 @@ export class CheckoutComponent implements OnInit {
   });
   readonly shippingFee = computed(() => calculateShippingFee(this.zipCode()));
   readonly cartTotal = computed(() => this.cartSubtotal() + this.shippingFee());
+  readonly recognizedName = signal<string | null>(null);
+  readonly restoredSession = signal(false);
+
+  constructor() {
+    this.form.controls.mobile.valueChanges
+      .pipe(
+        map((value) => value.trim()),
+        debounceTime(400),
+        distinctUntilChanged(),
+        takeUntilDestroyed(),
+        switchMap((mobile) => this.loginAndLoadAddresses(mobile))
+      )
+      .subscribe((addresses) => this.applyLookupResult(addresses));
+  }
 
   ngOnInit(): void {
     this.seoService.applyNoIndex('Checkout');
@@ -73,21 +89,7 @@ export class CheckoutComponent implements OnInit {
       return;
     }
 
-    const storedMobile = this.orderService.lookupMobile();
-    if (storedMobile && MOBILE_PATTERN.test(storedMobile)) {
-      this.form.patchValue({ mobile: storedMobile });
-      this.loadSavedAddresses(storedMobile);
-    }
-
-    this.form.controls.mobile.valueChanges
-      .pipe(
-        map((value) => value.trim()),
-        debounceTime(400),
-        distinctUntilChanged(),
-        filter((value) => MOBILE_PATTERN.test(value)),
-        takeUntilDestroyed()
-      )
-      .subscribe((mobile) => this.loadSavedAddresses(mobile));
+    this.restoreExistingSession();
   }
 
   handleCheckout(): void {
@@ -184,14 +186,76 @@ export class CheckoutComponent implements OnInit {
     return null;
   }
 
-  private loadSavedAddresses(mobile: string): void {
-    this.orderService.loadAddressesByMobile(mobile).subscribe((addresses) => {
-      if (addresses.length > 0) {
-        this.selectSavedAddress(addresses[0]);
-      } else {
-        this.selectNewAddress();
-      }
-    });
+  private loginAndLoadAddresses(mobile: string) {
+    if (!MOBILE_PATTERN.test(mobile)) {
+      this.orderService.clearAddresses();
+      this.recognizedName.set(null);
+      return of([] as SavedCheckoutAddress[]);
+    }
+
+    this.orderService.setLookupMobile(mobile);
+    return this.orderService.loadAddressesByMobile(mobile);
+  }
+
+  private restoreExistingSession(): void {
+    const storedMobile = this.asValidMobile(this.orderService.lookupMobile());
+    if (storedMobile) {
+      this.restoredSession.set(true);
+      this.prefillAndLoadByMobile(storedMobile);
+      return;
+    }
+
+    if (this.authService.isAuthenticated()) {
+      this.restoredSession.set(true);
+      this.orderService.loadAddressesForCurrentUser().subscribe((addresses) => {
+        const mobile =
+          this.asValidMobile(addresses[0]?.mobile) ?? this.asValidMobile(this.authService.currentUser());
+        if (mobile) {
+          this.form.patchValue({ mobile }, { emitEvent: false });
+          this.orderService.setLookupMobile(mobile);
+        }
+
+        if (addresses.length > 0) {
+          this.applyLookupResult(addresses);
+          return;
+        }
+
+        if (mobile) {
+          this.prefillAndLoadByMobile(mobile);
+        }
+      });
+      return;
+    }
+
+    const authMobile = this.asValidMobile(this.authService.currentUser());
+    if (authMobile) {
+      this.restoredSession.set(true);
+      this.prefillAndLoadByMobile(authMobile);
+    }
+  }
+
+  private prefillAndLoadByMobile(mobile: string): void {
+    this.form.patchValue({ mobile }, { emitEvent: false });
+    this.loginAndLoadAddresses(mobile).subscribe((addresses) => this.applyLookupResult(addresses));
+  }
+
+  private asValidMobile(value: string | null | undefined): string | null {
+    const mobile = value?.trim() ?? '';
+    return MOBILE_PATTERN.test(mobile) ? mobile : null;
+  }
+
+  private applyLookupResult(addresses: SavedCheckoutAddress[]): void {
+    if (addresses.length > 0) {
+      this.selectSavedAddress(addresses[0]);
+      const name = this.formatAddressName(addresses[0]);
+      this.recognizedName.set(name === 'Saved address' ? null : name);
+      return;
+    }
+
+    this.recognizedName.set(null);
+    if (this.selectedAddressId() !== 'new') {
+      this.selectNewAddress();
+    }
   }
 
   private applyAddressToForm(address: SavedCheckoutAddress): void {
@@ -204,5 +268,7 @@ export class CheckoutComponent implements OnInit {
       state: address.state,
       zipCode: address.zipCode,
     });
+    this.form.markAsUntouched();
+    this.form.markAsPristine();
   }
 }

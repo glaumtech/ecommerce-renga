@@ -1,4 +1,4 @@
-export type OrderStatus = 'Pending' | 'Accepted' | 'Shipped' | 'Delivered' | 'Cancelled' | 'Processing';
+export type OrderStatus = 'Pending' | 'Accepted' | 'Shipped' | 'Delivered' | 'Paid' | 'Cancelled' | 'Processing';
 
 export interface OrderItem {
   name: string;
@@ -32,7 +32,7 @@ export interface AdminOrder extends Order {
   shippingFee?: number;
 }
 
-export const PAYMENT_METHOD_COD = 'Gpay on Delivery';
+export const PAYMENT_METHOD_COD = 'UPI on Delivery';
 export { BASE_SHIPPING_FEE as SHIPPING_FEE } from '../utils/shipping-fee.util';
 
 export interface CheckoutPayload {
@@ -63,8 +63,10 @@ export function orderStatusProgress(status: string): number {
     case 'Accepted':
       return 40;
     case 'Shipped':
-      return 75;
+      return 65;
     case 'Delivered':
+      return 85;
+    case 'Paid':
       return 100;
     case 'Cancelled':
       return 0;
@@ -84,6 +86,8 @@ export function orderStatusMessage(status: string): string {
       return 'Hand-packaged parcel is currently dispatched and shipping.';
     case 'Delivered':
       return 'Your sacred shipment has arrived at your address.';
+    case 'Paid':
+      return 'Payment received. Thank you for your order.';
     case 'Cancelled':
       return 'This order has been cancelled.';
     default:

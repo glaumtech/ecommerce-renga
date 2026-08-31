@@ -41,6 +41,8 @@ import { AdminOrder, OrderStatus } from '../../../core/models/order.model';
                 [class.text-indigo-800]="order.status === 'Shipped'"
                 [class.bg-green-100]="order.status === 'Delivered'"
                 [class.text-green-800]="order.status === 'Delivered'"
+                [class.bg-emerald-100]="order.status === 'Paid'"
+                [class.text-emerald-800]="order.status === 'Paid'"
                 [class.bg-red-100]="order.status === 'Cancelled'"
                 [class.text-red-800]="order.status === 'Cancelled'"
               >
@@ -62,6 +64,8 @@ import { AdminOrder, OrderStatus } from '../../../core/models/order.model';
                 [class.text-indigo-700]="status === 'Shipped'"
                 [class.bg-green-50]="order.status === status && status === 'Delivered'"
                 [class.text-green-700]="status === 'Delivered'"
+                [class.bg-emerald-50]="order.status === status && status === 'Paid'"
+                [class.text-emerald-700]="status === 'Paid'"
                 [class.bg-red-50]="order.status === status && status === 'Cancelled'"
                 [class.text-red-700]="status === 'Cancelled'"
               >
@@ -138,7 +142,7 @@ export class OrderDetailPanelComponent {
   readonly screenshotMode = output<void>();
   readonly notesChange = output<string>();
 
-  readonly statuses: OrderStatus[] = ['Pending', 'Accepted', 'Shipped', 'Delivered', 'Cancelled'];
+  readonly statuses: OrderStatus[] = ['Pending', 'Accepted', 'Shipped', 'Delivered', 'Paid', 'Cancelled'];
 
   private notesTimer: ReturnType<typeof setTimeout> | null = null;
   private lastOrderId: string | null = null;

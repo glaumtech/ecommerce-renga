@@ -1,0 +1,102 @@
+.reviews-carousel-track {
+  display: flex;
+  gap: 1.5rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 0.25rem 0.15rem 0.75rem;
+}
+
+.reviews-carousel-track::-webkit-scrollbar {
+  display: none;
+}
+
+.reviews-carousel-card {
+  flex: 0 0 auto;
+  width: min(100%, 20rem);
+  min-height: 16rem;
+  scroll-snap-align: start;
+  background: #ffffff;
+  border: 1px solid #fde68a;
+  border-radius: 1rem;
+  padding: 1.25rem 1.35rem;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.06);
+}
+
+.reviews-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  background: #fff7ed;
+  color: #b45309;
+  font-weight: 700;
+  font-size: 0.95rem;
+  flex-shrink: 0;
+}
+
+.reviews-google-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.reviews-carousel-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 10;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid rgb(251 191 36 / 0.35);
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.95);
+  color: #92400e;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  transform: translateY(-50%);
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.reviews-carousel-nav:hover {
+  background: #fffbeb;
+  border-color: #f59e0b;
+  color: #b45309;
+}
+
+.reviews-carousel-nav-prev {
+  left: 0.5rem;
+}
+
+.reviews-carousel-nav-next {
+  right: 0.5rem;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (min-width: 640px) {
+  .reviews-carousel-card {
+    width: calc(50% - 0.75rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .reviews-carousel-card {
+    width: calc(33.333% - 1rem);
+  }
+}

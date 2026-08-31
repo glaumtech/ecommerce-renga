@@ -2,6 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { Injectable, inject } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { CategoryHubSeo, getCategoryHubByName } from '../constants/category-seo.constants';
+import { GOOGLE_REVIEWS_LISTING } from '../data/google-reviews';
 import { Product } from '../models/product.model';
 import { StoreMetaTag, StoreSeoSettings } from '../models/store-seo.model';
 
@@ -288,6 +289,13 @@ export class SeoService {
       },
       areaServed: 'Trichy',
       description: settings.defaultDescription || undefined,
+      aggregateRating: {
+        '@type': 'AggregateRating',
+        ratingValue: String(GOOGLE_REVIEWS_LISTING.rating),
+        reviewCount: String(GOOGLE_REVIEWS_LISTING.reviewCount),
+        bestRating: '5',
+        worstRating: '1',
+      },
     };
 
     this.setJsonLd('organization', schema);

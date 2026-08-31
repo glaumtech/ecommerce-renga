@@ -32,6 +32,7 @@ export interface SavedCheckoutAddress {
   city: string;
   state: string;
   zipCode: string;
+  mobile?: string | null;
 }
 
 export const LOOKUP_MOBILE_KEY = 'ananda_lookup_mobile';
@@ -70,6 +71,16 @@ export class OrderService {
         tap((addresses) => this.savedAddresses.set(addresses)),
         finalize(() => this.addressesLoading.set(false))
       );
+  }
+
+  loadAddressesForCurrentUser(): Observable<SavedCheckoutAddress[]> {
+    this.addressesLoading.set(true);
+
+    return this.http.get<SavedCheckoutAddress[]>(`${this.ordersUrl}/addresses`).pipe(
+      catchError(() => of([] as SavedCheckoutAddress[])),
+      tap((addresses) => this.savedAddresses.set(addresses)),
+      finalize(() => this.addressesLoading.set(false))
+    );
   }
 
   loadOrdersByMobile(mobile: string): void {
@@ -146,11 +157,17 @@ export class OrderService {
     this.lookupMobile.set(mobile);
   }
 
+  clearAddresses(): void {
+    this.savedAddresses.set([]);
+    this.addressesLoading.set(false);
+  }
+
   clearLookup(): void {
     removeSessionItem(LOOKUP_MOBILE_KEY);
     this.lookupMobile.set(null);
     this.customerName.set(null);
     this.orders.set([]);
+    this.savedAddresses.set([]);
     this.error.set(null);
   }
 
