@@ -1,6 +1,9 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
+import { combineLatest, distinctUntilChanged, filter, map } from 'rxjs';
 import {
+  CategoryHubSeo,
   getCategoryHubByName,
   getCategoryHubBySlug,
 } from '../../core/constants/category-seo.constants';
@@ -16,13 +19,19 @@ import { ProductCardComponent } from '../../shared/components/product-card/produ
 
 type ProductSortOption = 'name' | 'price';
 
+interface ShopRouteState {
+  hub: CategoryHubSeo | undefined;
+  category: string;
+  q: string;
+}
+
 @Component({
   selector: 'app-shop',
   imports: [ProductCardComponent, FiltersSidebarComponent, LoadingSpinnerComponent, EmptyStateComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './shop.component.html',
 })
-export class ShopComponent implements OnInit {
+export class ShopComponent {
   private readonly productService = inject(ProductService);
   private readonly cartService = inject(CartService);
   private readonly route = inject(ActivatedRoute);
@@ -62,44 +71,25 @@ export class ShopComponent implements OnInit {
 
   readonly filtersOpen = signal(false);
 
-  ngOnInit(): void {
-    this.productService.loadCategories();
+  constructor() {
+    if (this.productService.categories().length === 0) {
+      this.productService.loadCategories();
+    }
 
-    this.route.paramMap.subscribe((params) => {
-      const hub = getCategoryHubBySlug(params.get('categorySlug') || '');
-      this.activeHub.set(hub);
-      if (hub) {
-        this.selectedCategory.set(hub.categoryName);
-      }
-      this.applyPageSeo();
-      this.loadProducts();
-    });
-
-    this.route.queryParamMap.subscribe((params) => {
-      const category = params.get('category');
-      const q = params.get('q');
-      const hubSlug = this.route.snapshot.paramMap.get('categorySlug');
-
-      if (!hubSlug && category) {
-        const hub = getCategoryHubByName(category);
-        if (hub) {
-          this.router.navigate(['/shop', hub.slug], {
-            queryParams: q ? { q } : {},
-            replaceUrl: true,
-          });
-          return;
-        }
-      }
-
-      if (category && !hubSlug) {
-        this.selectedCategory.set(category);
-      }
-      if (q) {
-        this.searchQuery.set(q);
-      }
-      this.applyPageSeo();
-      this.loadProducts();
-    });
+    combineLatest([this.route.paramMap, this.route.queryParamMap])
+      .pipe(
+        takeUntilDestroyed(),
+        map(([params, query]) => this.resolveRouteState(params, query)),
+        filter((state): state is ShopRouteState => state !== null),
+        distinctUntilChanged((a, b) => a.category === b.category && a.q === b.q)
+      )
+      .subscribe((state) => {
+        this.activeHub.set(state.hub);
+        this.selectedCategory.set(state.category);
+        this.searchQuery.set(state.q);
+        this.applyPageSeo();
+        this.loadProducts();
+      });
   }
 
   onSortChange(event: Event): void {
@@ -108,6 +98,13 @@ export class ShopComponent implements OnInit {
   }
 
   onCategoryChange(category: string): void {
+    if (category === this.selectedCategory()) {
+      this.filtersOpen.set(false);
+      return;
+    }
+
+    this.filtersOpen.set(false);
+
     const hub = getCategoryHubByName(category);
     if (hub) {
       this.router.navigate(['/shop', hub.slug], {
@@ -116,14 +113,12 @@ export class ShopComponent implements OnInit {
       return;
     }
 
-    this.selectedCategory.set(category);
     this.router.navigate(['/shop'], {
       queryParams: {
         category: category !== ALL_CATEGORY ? category : null,
         q: this.searchQuery() || null,
       },
     });
-    this.loadProducts();
   }
 
   closeFilters(): void {
@@ -131,16 +126,12 @@ export class ShopComponent implements OnInit {
   }
 
   clearFilters(): void {
-    this.selectedCategory.set(ALL_CATEGORY);
-    this.searchQuery.set('');
+    this.filtersOpen.set(false);
     this.router.navigate(['/shop']);
-    this.loadProducts();
   }
 
   clearSearch(): void {
-    this.searchQuery.set('');
-    this.updateQueryParams();
-    this.loadProducts();
+    this.updateQueryParams('');
   }
 
   retry(): void {
@@ -154,6 +145,30 @@ export class ShopComponent implements OnInit {
   categoryHubLink(categoryName: string): (string | Record<string, string>)[] {
     const hub = getCategoryHubByName(categoryName);
     return hub ? ['/shop', hub.slug] : ['/shop'];
+  }
+
+  private resolveRouteState(params: ParamMap, query: ParamMap): ShopRouteState | null {
+    const hubSlug = params.get('categorySlug') || '';
+    const hub = getCategoryHubBySlug(hubSlug);
+    const categoryParam = query.get('category');
+    const q = query.get('q') || '';
+
+    if (!hubSlug && categoryParam) {
+      const categoryHub = getCategoryHubByName(categoryParam);
+      if (categoryHub) {
+        this.router.navigate(['/shop', categoryHub.slug], {
+          queryParams: q ? { q } : {},
+          replaceUrl: true,
+        });
+        return null;
+      }
+    }
+
+    return {
+      hub,
+      category: hub?.categoryName ?? (categoryParam || ALL_CATEGORY),
+      q,
+    };
   }
 
   private loadProducts(): void {
@@ -173,11 +188,11 @@ export class ShopComponent implements OnInit {
     this.seoService.applyShopSeo(settings);
   }
 
-  private updateQueryParams(): void {
+  private updateQueryParams(searchQuery: string): void {
     const hub = this.activeHub();
     if (hub) {
       this.router.navigate(['/shop', hub.slug], {
-        queryParams: { q: this.searchQuery() || null },
+        queryParams: { q: searchQuery || null },
       });
       return;
     }
@@ -185,7 +200,7 @@ export class ShopComponent implements OnInit {
     this.router.navigate(['/shop'], {
       queryParams: {
         category: this.selectedCategory() !== ALL_CATEGORY ? this.selectedCategory() : null,
-        q: this.searchQuery() || null,
+        q: searchQuery || null,
       },
     });
   }

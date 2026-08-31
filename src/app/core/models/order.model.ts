@@ -32,7 +32,7 @@ export interface AdminOrder extends Order {
   shippingFee?: number;
 }
 
-export const PAYMENT_METHOD_COD = 'Cash on Delivery';
+export const PAYMENT_METHOD_COD = 'Gpay on Delivery';
 export { BASE_SHIPPING_FEE as SHIPPING_FEE } from '../utils/shipping-fee.util';
 
 export interface CheckoutPayload {

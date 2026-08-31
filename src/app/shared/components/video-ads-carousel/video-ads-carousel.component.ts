@@ -47,6 +47,9 @@ export class VideoAdsCarouselComponent {
   constructor() {
     effect(() => {
       this.ads();
+      if (!this.isBrowser) {
+        return;
+      }
       queueMicrotask(() => this.updateScrollState());
     });
 
@@ -99,13 +102,16 @@ export class VideoAdsCarouselComponent {
   }
 
   onVideoClick(index: number): void {
+    if (!this.isBrowser) {
+      return;
+    }
     if (index !== this.playingIndex()) {
       this.userPaused.set(false);
       void this.playIndex(index, true);
       return;
     }
     const video = this.videoAt(index);
-    if (!video) {
+    if (!video || !this.isMediaElement(video)) {
       return;
     }
     if (video.paused) {
@@ -120,10 +126,13 @@ export class VideoAdsCarouselComponent {
   toggleMute(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
+    if (!this.isBrowser) {
+      return;
+    }
     const nextMuted = !this.muted();
     this.muted.set(nextMuted);
     const video = this.videoAt(this.playingIndex());
-    if (video) {
+    if (this.isMediaElement(video)) {
       video.muted = nextMuted;
     }
   }
@@ -149,6 +158,9 @@ export class VideoAdsCarouselComponent {
   }
 
   private async playIndex(index: number, scrollTrack = false): Promise<void> {
+    if (!this.isBrowser) {
+      return;
+    }
     const videos = this.reels();
     if (!videos.length) {
       return;
@@ -159,9 +171,13 @@ export class VideoAdsCarouselComponent {
 
     videos.forEach((ref, i) => {
       const video = ref.nativeElement;
-      if (i !== safeIndex && !video.paused) {
+      if (i !== safeIndex && this.isMediaElement(video) && !video.paused) {
         video.pause();
-        video.currentTime = 0;
+        try {
+          video.currentTime = 0;
+        } catch {
+          // Domino / incomplete media stubs may reject seek.
+        }
       }
     });
 
@@ -170,6 +186,9 @@ export class VideoAdsCarouselComponent {
     }
 
     const video = videos[safeIndex].nativeElement;
+    if (!this.isMediaElement(video)) {
+      return;
+    }
     video.muted = this.muted();
     if (!this.sectionVisible || this.userPaused()) {
       return;
@@ -188,12 +207,19 @@ export class VideoAdsCarouselComponent {
   }
 
   private pauseAll(): void {
+    if (!this.isBrowser) {
+      return;
+    }
     for (const ref of this.reels()) {
       const video = ref.nativeElement;
-      if (!video.paused) {
+      if (this.isMediaElement(video) && !video.paused) {
         video.pause();
       }
     }
+  }
+
+  private isMediaElement(video: HTMLVideoElement | null | undefined): video is HTMLVideoElement {
+    return !!video && typeof video.pause === 'function' && typeof video.play === 'function';
   }
 
   private scrollTrackToIndex(index: number): void {

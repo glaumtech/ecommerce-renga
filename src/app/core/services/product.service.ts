@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
-import { catchError, finalize, map, of } from 'rxjs';
+import { Subject, catchError, finalize, map, of, switchMap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Category, Product } from '../models/product.model';
 import { toUserFriendlyErrorMessage } from '../utils/api-error.util';
@@ -72,10 +72,28 @@ export class ProductService {
   readonly detailError = signal<string | null>(null);
   readonly similarProducts = signal<Product[]>([]);
 
-  loadProducts(filters: ProductFilters = {}): void {
-    this.loading.set(true);
-    this.error.set(null);
+  private readonly productsLoad$ = new Subject<ProductFilters>();
 
+  constructor() {
+    this.productsLoad$
+      .pipe(
+        switchMap((filters) => {
+          this.loading.set(true);
+          this.error.set(null);
+          return this.fetchProductList(filters);
+        })
+      )
+      .subscribe((products) => {
+        this.products.set(products);
+        this.loading.set(false);
+      });
+  }
+
+  loadProducts(filters: ProductFilters = {}): void {
+    this.productsLoad$.next(filters);
+  }
+
+  private fetchProductList(filters: ProductFilters) {
     let params = new HttpParams();
     if (filters.category && filters.category !== 'All') {
       params = params.set('category', filters.category);
@@ -87,19 +105,13 @@ export class ProductService {
       params = params.set('maxPrice', String(filters.maxPrice));
     }
 
-    this.http
-      .get<StoreProductDto[]>(`${this.storeUrl}/products`, { params })
-      .pipe(
-        map((items) => items.map((item) => this.mapProduct(item))),
-        catchError((err) => {
-          this.error.set(
-            toUserFriendlyErrorMessage(err, PRODUCTS_LOAD_ERROR)
-          );
-          return of([] as Product[]);
-        }),
-        finalize(() => this.loading.set(false))
-      )
-      .subscribe((products) => this.products.set(products));
+    return this.http.get<StoreProductDto[]>(`${this.storeUrl}/products`, { params }).pipe(
+      map((items) => items.map((item) => this.mapProduct(item))),
+      catchError((err) => {
+        this.error.set(toUserFriendlyErrorMessage(err, PRODUCTS_LOAD_ERROR));
+        return of([] as Product[]);
+      })
+    );
   }
 
   loadCategories(): void {
