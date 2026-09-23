@@ -48,11 +48,11 @@ import { ProductService } from '../../../core/services/product.service';
         <div>
           <h4 class="text-white font-semibold mb-4">Customer Care</h4>
           <ul class="space-y-2 text-sm">
-            <li><a routerLink="/about-us" class="hover:text-amber-500 transition-colors">About Us</a></li>
-            <li><a routerLink="/return-policy" class="hover:text-amber-500 transition-colors">Return Policy</a></li>
-            <li><a routerLink="/account" class="hover:text-amber-500 transition-colors">Track Order</a></li>
-            <li><a href="#" class="hover:text-amber-500 transition-colors">Shipping Policy</a></li>
-            <li><a href="#" class="hover:text-amber-500 transition-colors">Contact Us</a></li>
+            <li><a routerLink="/about-us" class="text-white hover:text-amber-500 transition-colors">About Us</a></li>
+            <li><a routerLink="/return-policy" class="text-white hover:text-amber-500 transition-colors">Return Policy</a></li>
+            <li><a routerLink="/account" class="text-white hover:text-amber-500 transition-colors">Track Order</a></li>
+            <li><a href="#" class="text-white hover:text-amber-500 transition-colors">Shipping Policy</a></li>
+            <li><a href="#" class="text-white hover:text-amber-500 transition-colors">Contact Us</a></li>
           </ul>
         </div>
       </div>
@@ -74,6 +74,12 @@ import { ProductService } from '../../../core/services/product.service';
           </a>
         </div>
         &copy; {{ currentYear }} Sri Renga Traders. All rights reserved.
+        <a
+          href="https://glaum.in"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="ml-2 text-white hover:text-amber-500 transition-colors"
+        >Developed by Glaum Technologies</a>
       </div>
     </footer>
   `,

@@ -49,7 +49,7 @@ export class CheckoutComponent implements OnInit {
 
   readonly paymentMethod = PAYMENT_METHOD_COD;
   readonly inputClass =
-    'w-full border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none';
+    'box-border w-full min-w-0 border border-slate-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none';
 
   readonly form = this.fb.nonNullable.group({
     firstName: ['', Validators.required],

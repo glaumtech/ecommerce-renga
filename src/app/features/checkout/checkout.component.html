@@ -13,11 +13,11 @@
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
       <div class="p-6 sm:p-8">
-        <form [formGroup]="form" (ngSubmit)="handleCheckout()" class="space-y-8">
+        <form [formGroup]="form" (ngSubmit)="handleCheckout()" class="space-y-6">
           <section>
-            <h3 class="text-lg font-semibold text-slate-800 mb-5">Contact Information</h3>
+            <h3 class="text-lg font-semibold text-slate-800 mt-0 mb-4">Contact Information</h3>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-5">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 [&>*]:min-w-0">
               <div class="md:col-span-2 flex flex-col">
                 <label for="mobile" class="block text-sm font-medium text-slate-700 mb-1.5">Mobile Number</label>
                 <input
@@ -30,7 +30,7 @@
                   placeholder="10-digit mobile number"
                   [class]="inputClass"
                 />
-                <p class="min-h-4 text-xs text-red-600 mt-1">{{ fieldError('mobile') ?? '' }}</p>
+                <p class="mx-0 mb-0 mt-1 min-h-4 text-xs text-red-600">{{ fieldError('mobile') ?? '' }}</p>
                 @if (!fieldError('mobile') && addressesLoading()) {
                   <p class="text-xs text-slate-500 -mt-2">Looking up saved details for this number...</p>
                 } @else if (!fieldError('mobile') && savedAddresses().length > 0) {
@@ -98,7 +98,7 @@
                   autocomplete="given-name"
                   [class]="inputClass"
                 />
-                <p class="min-h-4 text-xs text-red-600 mt-1">{{ fieldError('firstName') ?? '' }}</p>
+                <p class="mx-0 mb-0 mt-1 min-h-4 text-xs text-red-600">{{ fieldError('firstName') ?? '' }}</p>
               </div>
               <div class="flex flex-col">
                 <label for="lastName" class="block text-sm font-medium text-slate-700 mb-1.5">Last Name</label>
@@ -109,7 +109,7 @@
                   autocomplete="family-name"
                   [class]="inputClass"
                 />
-                <p class="min-h-4 text-xs text-red-600 mt-1">{{ fieldError('lastName') ?? '' }}</p>
+                <p class="mx-0 mb-0 mt-1 min-h-4 text-xs text-red-600">{{ fieldError('lastName') ?? '' }}</p>
               </div>
               <div class="md:col-span-2 flex flex-col">
                 <label for="email" class="block text-sm font-medium text-slate-700 mb-1.5">
@@ -123,14 +123,14 @@
                   placeholder="you@example.com"
                   [class]="inputClass"
                 />
-                <p class="min-h-4 text-xs text-red-600 mt-1">{{ fieldError('email') ?? '' }}</p>
+                <p class="mx-0 mb-0 mt-1 min-h-4 text-xs text-red-600">{{ fieldError('email') ?? '' }}</p>
               </div>
             </div>
           </section>
 
           <section>
-            <h3 class="text-lg font-semibold text-slate-800 mb-5">Shipping Address</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-5">
+            <h3 class="text-lg font-semibold text-slate-800 mt-0 mb-4">Shipping Address</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 [&>*]:min-w-0">
               <div class="md:col-span-2 flex flex-col">
                 <label for="streetAddress" class="block text-sm font-medium text-slate-700 mb-1.5">Street Address</label>
                 <input
@@ -140,7 +140,7 @@
                   autocomplete="street-address"
                   [class]="inputClass"
                 />
-                <p class="min-h-4 text-xs text-red-600 mt-1">{{ fieldError('streetAddress') ?? '' }}</p>
+                <p class="mx-0 mb-0 mt-1 min-h-4 text-xs text-red-600">{{ fieldError('streetAddress') ?? '' }}</p>
               </div>
               <div class="flex flex-col">
                 <label for="city" class="block text-sm font-medium text-slate-700 mb-1.5">City</label>
@@ -151,7 +151,7 @@
                   autocomplete="address-level2"
                   [class]="inputClass"
                 />
-                <p class="min-h-4 text-xs text-red-600 mt-1">{{ fieldError('city') ?? '' }}</p>
+                <p class="mx-0 mb-0 mt-1 min-h-4 text-xs text-red-600">{{ fieldError('city') ?? '' }}</p>
               </div>
               <div class="flex flex-col">
                 <label for="state" class="block text-sm font-medium text-slate-700 mb-1.5">State</label>
@@ -162,7 +162,7 @@
                   autocomplete="address-level1"
                   [class]="inputClass"
                 />
-                <p class="min-h-4 text-xs text-red-600 mt-1">{{ fieldError('state') ?? '' }}</p>
+                <p class="mx-0 mb-0 mt-1 min-h-4 text-xs text-red-600">{{ fieldError('state') ?? '' }}</p>
               </div>
               <div class="flex flex-col">
                 <label for="zipCode" class="block text-sm font-medium text-slate-700 mb-1.5">ZIP / PIN Code</label>
@@ -175,13 +175,13 @@
                   autocomplete="postal-code"
                   [class]="inputClass"
                 />
-                <p class="min-h-4 text-xs text-red-600 mt-1">{{ fieldError('zipCode') ?? '' }}</p>
+                <p class="mx-0 mb-0 mt-1 min-h-4 text-xs text-red-600">{{ fieldError('zipCode') ?? '' }}</p>
               </div>
             </div>
           </section>
 
           <section>
-            <h3 class="text-lg font-semibold text-slate-800 mb-4">Payment Method</h3>
+            <h3 class="text-lg font-semibold text-slate-800 mt-0 mb-4">Payment Method</h3>
             <div class="bg-amber-50 p-4 rounded-xl border-2 border-amber-200">
               <label class="flex items-start gap-3 cursor-default">
                 <input
@@ -242,7 +242,7 @@
               <span>Shipping (per kg)</span>
               <span>{{ shippingFee() | appCurrency }}</span>
             </div>
-            <p class="text-xs text-amber-700 mt-1">Charges may vary based on the package weight.</p>
+            <p class="text-xs text-amber-700 mt-1">Charges may vary based on the package weight. If there is a change, we will inform you.</p>
           </div>
         </div>
         <div class="flex justify-between font-bold text-lg text-slate-800 mb-6 pt-4 border-t border-slate-200">

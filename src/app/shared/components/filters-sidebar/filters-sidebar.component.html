@@ -1,21 +1,17 @@
 <div
-  class="bg-white p-6 rounded-xl border border-slate-200"
-  [class.sticky]="sticky()"
-  [class.top-24]="sticky()"
-  [class.shadow-sm]="sticky()"
-  [class.border-0]="!sticky()"
-  [class.p-0]="!sticky()"
-  [class.rounded-none]="!sticky()"
+  [class]="sticky()
+    ? 'bg-white rounded-xl border border-slate-200 sticky top-24 h-[calc(100vh-8rem)] max-h-[calc(100vh-8rem)] min-h-0 flex flex-col overflow-hidden p-6 shadow-sm'
+    : 'bg-white border-0 p-0 rounded-none'"
 >
   @if (sticky()) {
-    <div class="flex items-center mb-6">
+    <div class="flex items-center shrink-0">
       <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-amber-600 mr-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-      <h3 class="font-bold text-lg text-slate-800">Filters</h3>
+      <h3 class="m-0 font-bold text-lg text-slate-800">Filters</h3>
     </div>
   }
 
-  <div class="mb-8">
-    <h4 class="font-semibold text-slate-800 mb-3 text-sm uppercase tracking-wider">Categories</h4>
+  <div [class]="sticky() ? 'min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1' : 'mb-8'">
+    <h4 class="mt-0 mb-3 font-semibold text-slate-800 text-sm uppercase tracking-wider">Categories</h4>
     <div class="space-y-3">
       <label class="flex items-center cursor-pointer group">
         <input
@@ -70,7 +66,8 @@
   @if (showClear()) {
     <button
       (click)="clearFilters.emit()"
-      class="w-full mt-6 text-sm text-slate-500 hover:text-slate-800 underline decoration-slate-300 underline-offset-4"
+      class="w-full shrink-0 text-sm text-slate-500 hover:text-slate-800 underline decoration-slate-300 underline-offset-4"
+      [class]="sticky() ? 'mt-4' : 'mt-6'"
       type="button"
     >
       Clear Filters

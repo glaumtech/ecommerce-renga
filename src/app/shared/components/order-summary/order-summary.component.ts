@@ -14,7 +14,7 @@ import { AppCurrencyPipe } from '../../pipes/app-currency.pipe';
         <div class="flex justify-between"><span>Subtotal ({{ cartService.cartCount() }} items)</span><span>{{ cartService.cartTotal() | appCurrency }}</span></div>
         <div>
           <div class="flex justify-between"><span>Estimated Shipping (per kg)</span><span>{{ cartService.shippingFee | appCurrency }}</span></div>
-          <p class="text-xs text-amber-700 mt-1">Charges may vary based on the package weight.</p>
+          <p class="text-xs text-amber-700 mt-1">Charges may vary based on the package weight. If there is a change, we will inform you.</p>
         </div>
       </div>
       <div class="flex justify-between font-bold text-lg text-slate-800 mb-6 pt-4 border-t border-slate-200">
