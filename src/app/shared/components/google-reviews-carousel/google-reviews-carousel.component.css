@@ -1,6 +1,8 @@
 .reviews-carousel-track {
   display: flex;
   gap: 1.5rem;
+  max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   scroll-behavior: smooth;

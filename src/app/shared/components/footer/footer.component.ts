@@ -24,7 +24,7 @@ import { ProductService } from '../../../core/services/product.service';
               <span class="block text-sm font-medium text-amber-700 leading-snug">&amp; Herbal Traders</span>
             </div>
           </a>
-          <p class="text-lg text-slate-400 mb-4 max-w-sm flex items-center gap-2">
+          <p class="text-lg text-white mb-4 max-w-sm flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="inline h-5 w-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5.75C3 4.784 3.784 4 4.75 4h2.271c.689 0 1.279.43 1.488 1.083l.7 2.101a1.5 1.5 0 01-.345 1.518l-1.22 1.22a16.088 16.088 0 007.07 7.07l1.22-1.22A1.5 1.5 0 0116.816 15.7l2.101.7A1.5 1.5 0 0120 18.979V21.25A1.75 1.75 0 0118.25 23h-1C7.664 23 1 16.336 1 8.75v-1A1.75 1.75 0 012.75 6h.25z"/>
             </svg>

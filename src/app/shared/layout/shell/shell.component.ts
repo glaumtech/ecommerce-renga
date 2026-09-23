@@ -14,9 +14,9 @@ import { HeaderComponent } from '../../components/header/header.component';
   imports: [RouterOutlet, HeaderComponent, FooterComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="min-h-screen flex flex-col bg-slate-50 font-sans text-slate-900 selection:bg-amber-200 selection:text-amber-900">
+    <div class="min-h-screen max-w-full min-w-0 flex flex-col bg-slate-50 font-sans text-slate-900 selection:bg-amber-200 selection:text-amber-900">
       <app-header />
-      <main class="flex-grow">
+      <main class="flex-grow min-w-0 max-w-full">
         <router-outlet />
       </main>
       <app-footer />
