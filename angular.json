@@ -118,6 +118,17 @@
                   "with": "src/environments/environment.renga.ts"
                 }
               ]
+            },
+            "pilot": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.pilot.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -133,6 +144,9 @@
             },
             "renga": {
               "buildTarget": "ananda-store:build:renga"
+            },
+            "pilot": {
+              "buildTarget": "ananda-store:build:pilot"
             }
           },
           "defaultConfiguration": "development"
