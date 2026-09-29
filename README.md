@@ -14,6 +14,31 @@ npm start
 mvn spring-boot:run
 ```
 
+## Local end-to-end (H2 mock DB + Playwright)
+
+1. In **trueup-lite-backend**, start the API with the `e2e` profile (in-memory H2 + seed data):
+
+   ```bash
+   SPRING_PROFILES_ACTIVE=e2e mvn spring-boot:run
+   ```
+
+   See `docs/E2E_LOCAL.md` in the backend repo for growing `mock-data.sql` from a MySQL backup.
+
+2. In this project, install deps and run the storefront:
+
+   ```bash
+   npm install
+   npm start
+   ```
+
+3. With the backend on **8081** and Angular on **4200**, run Playwright:
+
+   ```bash
+   npm run e2e
+   ```
+
+   Optional: `E2E_BASE_URL` (default `http://localhost:4200`), `E2E_API_URL` (default `http://localhost:8081`), `npm run e2e:ui` for the interactive runner.
+
 ## Architecture
 
 - **Lazy-loaded routes**: Home, Shop, Cart, Checkout, Account
