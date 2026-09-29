@@ -18,8 +18,7 @@ export const GOOGLE_REVIEWS_LISTING: GoogleReviewsListing = {
   placeName: 'Sri Renga Pooja & Herbal Traders',
   rating: 4.9,
   reviewCount: 19,
-  mapsUrl:
-    'https://www.google.com/maps/search/?api=1&query=Sri+Renga+Pooja+%26+Herbal+Traders+Lalgudi+VRF9%2BR8',
+  mapsUrl: 'https://maps.app.goo.gl/nz3z1G6tutW1werVA',
   reviews: [
     {
       author: 'Priyanka S',

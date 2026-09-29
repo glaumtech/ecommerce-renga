@@ -20,4 +20,20 @@ test.describe('storefront API coupling', () => {
       true
     );
   });
+
+  test('google reviews API returns listing shape', async ({ request }) => {
+    const response = await request.get(`${apiBase}/api/store/google-reviews`);
+    expect(response.ok()).toBeTruthy();
+    const body = (await response.json()) as {
+      placeName?: string;
+      rating?: number;
+      reviewCount?: number;
+      mapsUrl?: string;
+      reviews?: unknown[];
+    };
+    expect(typeof body.placeName).toBe('string');
+    expect(Array.isArray(body.reviews)).toBeTruthy();
+    expect(typeof body.reviewCount).toBe('number');
+    expect(body.mapsUrl).toContain('maps.app.goo.gl');
+  });
 });
