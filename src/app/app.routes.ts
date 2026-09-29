@@ -49,6 +49,11 @@ export const routes: Routes = [
                 (m) => m.AdminGoogleReviewsComponent
               ),
           },
+          {
+            path: 'offers',
+            loadComponent: () =>
+              import('./features/admin/offers/admin-offers.component').then((m) => m.AdminOffersComponent),
+          },
         ],
       },
     ],

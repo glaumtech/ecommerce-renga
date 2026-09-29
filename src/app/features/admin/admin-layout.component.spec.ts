@@ -41,6 +41,17 @@ describe('AdminLayoutComponent', () => {
       '';
     expect(routerTarget).toContain('google-reviews');
   });
+
+  it('includes Offers & Discounts admin navigation link to /admin/dashboard/offers', () => {
+    const links = Array.from(fixture.nativeElement.querySelectorAll('a')) as HTMLAnchorElement[];
+    const offersLink = links.find((anchor) => anchor.textContent?.includes('Offers & Discounts'));
+    expect(offersLink).toBeTruthy();
+    const routerTarget =
+      offersLink?.getAttribute('routerLink') ??
+      offersLink?.getAttribute('ng-reflect-router-link') ??
+      '';
+    expect(routerTarget).toContain('/admin/dashboard/offers');
+  });
 });
 
 function ofVoid() {
