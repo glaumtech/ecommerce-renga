@@ -42,6 +42,13 @@ export const routes: Routes = [
                 (m) => m.AdminVideoAdsComponent
               ),
           },
+          {
+            path: 'google-reviews',
+            loadComponent: () =>
+              import('./features/admin/google-reviews/admin-google-reviews.component').then(
+                (m) => m.AdminGoogleReviewsComponent
+              ),
+          },
         ],
       },
     ],
