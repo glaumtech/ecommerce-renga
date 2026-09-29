@@ -11,6 +11,17 @@ test.describe('storefront API coupling', () => {
     expect(body).toContain('e2e-brass-lamp');
   });
 
+  test('seeded brass lamp price reflects inventory row not items.selling_price alone', async ({
+    request,
+  }) => {
+    const response = await request.get(`${apiBase}/api/store/products`);
+    expect(response.ok()).toBeTruthy();
+    const products = (await response.json()) as Array<{ slug?: string; price?: number }>;
+    const lamp = products.find((p) => p.slug === 'e2e-brass-lamp');
+    expect(lamp).toBeDefined();
+    expect(lamp?.price).toBe(499);
+  });
+
   test('categories API returns category trees from mock backend', async ({ request }) => {
     const response = await request.get(`${apiBase}/api/store/categories`);
     expect(response.ok()).toBeTruthy();

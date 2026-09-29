@@ -46,4 +46,21 @@ test.describe('acceptance static checks', () => {
     expect(readme).toContain('npm run e2e');
     expect(readme).toContain('docs/E2E_LOCAL.md');
   });
+
+  test('package.json defines Angular unit test script for non-regression', () => {
+    const pkg = JSON.parse(
+      fs.readFileSync(path.join(projectRoot, 'package.json'), 'utf8')
+    ) as { scripts?: Record<string, string> };
+    expect(pkg.scripts?.['test']).toBeDefined();
+    expect(pkg.scripts?.['test']).toContain('ng test');
+  });
+
+  test('playwright.config.ts binds baseURL to E2E_BASE_URL environment variable', () => {
+    const configSource = fs.readFileSync(
+      path.join(projectRoot, 'playwright.config.ts'),
+      'utf8'
+    );
+    expect(configSource).toContain('const baseURL = process.env.E2E_BASE_URL');
+    expect(configSource).toContain("?? 'http://localhost:4200'");
+  });
 });
