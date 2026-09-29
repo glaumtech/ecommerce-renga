@@ -1,0 +1,37 @@
+
+> ananda-store@0.0.0 test
+> ng test --watch=false --browsers=ChromeHeadless
+
+Node.js version v23.7.0 detected.
+Odd numbered Node.js versions will not enter LTS status and should not be used for production. For more information, please see https://nodejs.org/en/about/previous-releases/.
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+
+Error: [96msrc/app/offers-storefront-scope.spec.ts[0m:[93m11[0m:[93m36[0m - [91merror[0m[90m TS2345: [0mArgument of type 'typeof AdminOffersComponent' is not assignable to parameter of type 'Expected<typeof CartComponent>'.
+  Type 'typeof AdminOffersComponent' is not assignable to type 'typeof CartComponent'.
+    Type 'AdminOffersComponent' is missing the following properties from type 'CartComponent': seoService, cartService
+
+[7m11[0m     expect(CartComponent).not.toBe(AdminOffersComponent);
+[7m  [0m [91m                                   ~~~~~~~~~~~~~~~~~~~~[0m
+
+
+Error: [96msrc/app/offers-storefront-scope.spec.ts[0m:[93m15[0m:[93m40[0m - [91merror[0m[90m TS2345: [0mArgument of type 'typeof AdminOffersComponent' is not assignable to parameter of type 'Expected<typeof CheckoutComponent>'.
+  Types of construct signatures are incompatible.
+    Type 'new () => AdminOffersComponent' is not assignable to type 'new () => CheckoutComponent'.
+      Type 'AdminOffersComponent' is missing the following properties from type 'CheckoutComponent': cartService, orderService, authService, router, and 28 more.
+
+[7m15[0m     expect(CheckoutComponent).not.toBe(AdminOffersComponent);
+[7m  [0m [91m                                       ~~~~~~~~~~~~~~~~~~~~[0m
+
+
+
+[32m29 09 2026 22:54:28.362:INFO [karma-server]: [39mKarma v6.4.4 server started at http://localhost:9876/
+[32m29 09 2026 22:54:28.363:INFO [launcher]: [39mLaunching browsers ChromeHeadless with concurrency unlimited
+[91m29 09 2026 22:54:28.363:ERROR [karma-server]: [39mError: Found 1 load error
+    at Server.<anonymous> (/Users/Praveen/.cursor/worktrees/ecommerce-site/pilot-job_1b42e69288f5-proj_0b4da127034b/node_modules/karma/lib/server.js:243:26)
+    at Object.onceWrapper (node:events:621:28)
+    at Server.emit (node:events:519:35)
+    at emitListeningNT (node:net:1980:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+✔ Browser application bundle generation complete.
+✔ Browser application bundle generation complete.

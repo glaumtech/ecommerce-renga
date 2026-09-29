@@ -46,6 +46,10 @@ mvn spring-boot:run
 - **Session auth**: `/reg/login` with `withCredentials` (cookie-based)
 - **Store API**: `/api/store/products`, `/api/store/categories`, `/api/store/orders`
 
+## Admin portal
+
+Staff login at `/admin`. Fulfillment dashboard routes include orders, categories, video ads, Google reviews, and **Offers & Discounts** at `/admin/dashboard/offers`. The offers screen calls the TrueUp Lite backend **`/api/offers`** API (CRUD, search, toggle status, statistics) and catalog helpers (`/items/getAll`, `/categories`, `/brands`).
+
 ## Build
 
 ```bash
