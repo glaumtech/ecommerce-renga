@@ -22,7 +22,7 @@ import { OrderSummaryComponent } from './shared/components/order-summary/order-s
 import { mockCartItem } from './testing/mock-cart-item';
 
 /**
- * Automated coverage for `.cursor-pilot/job_7616bb6d496e/ACCEPTANCE.md` (discount change).
+ * Automated coverage for job_756b05c5616a checkout order summary (ACCEPTANCE.md).
  */
 describe('checkout discount change acceptance (ACCEPTANCE.md)', () => {
   const changedProjects = ['ecommerce-site'];
@@ -34,7 +34,7 @@ describe('checkout discount change acceptance (ACCEPTANCE.md)', () => {
     'notification-framework',
   ];
   const subtotalAfterDiscountLabel = 'Subtotal after discount';
-  const unchangedProjectDiffMarker = 'Subtotal after discount';
+  const unchangedProjectDiffMarker = 'Total before discount';
 
   describe('Scope and workspace', () => {
     it('ACCEPTANCE: only ecommerce-site is the changed project for discount-change UI', () => {
@@ -42,7 +42,7 @@ describe('checkout discount change acceptance (ACCEPTANCE.md)', () => {
       expect(unchangedProjects).not.toContain('ecommerce-site');
     });
 
-    it('ACCEPTANCE: unchanged projects must not ship checkout Subtotal after discount UI marker', () => {
+    it('ACCEPTANCE: unchanged projects must not ship checkout Total before discount UI marker', () => {
       expect(unchangedProjects).toEqual([
         'trueup-lite-backend',
         'trueup-lite-frontend',
@@ -50,11 +50,11 @@ describe('checkout discount change acceptance (ACCEPTANCE.md)', () => {
         'aws-scripts',
         'notification-framework',
       ]);
-      expect(unchangedProjectDiffMarker).toBe('Subtotal after discount');
+      expect(unchangedProjectDiffMarker).toBe('Total before discount');
     });
 
     it('ACCEPTANCE: this spec file documents changed-project scope contract', () => {
-      expect(subtotalAfterDiscountLabel).toBe('Subtotal after discount');
+      expect(unchangedProjectDiffMarker).toBe('Total before discount');
     });
   });
 
@@ -335,17 +335,19 @@ describe('checkout discount change acceptance (ACCEPTANCE.md)', () => {
   });
 
   describe('Documentation', () => {
-    it('ACCEPTANCE: README describes before/after subtotal and discounted merchandise total', async () => {
+    it('ACCEPTANCE: README describes total before discount and discounted merchandise total', async () => {
       await TestBed.configureTestingModule({
         providers: [provideHttpClient()],
       }).compileComponents();
       const readme = await firstValueFrom(
         TestBed.inject(HttpClient).get('/README.md', { responseType: 'text' })
       );
-      expect(readme.toLowerCase()).toContain('subtotal before discount');
-      expect(readme.toLowerCase()).toContain('subtotal after discount');
-      expect(readme.toLowerCase()).toContain('finalamount');
-      expect(readme.toLowerCase()).toContain('discounted merchandise');
+      const readmeLower = readme.toLowerCase();
+      expect(readmeLower).toContain('subtotal before discount');
+      expect(readmeLower).toContain('total before discount');
+      expect(readmeLower).toContain('finalamount');
+      expect(readmeLower).toContain('discounted merchandise');
+      expect(readmeLower).toContain('not shown as its own summary row');
     });
   });
 });

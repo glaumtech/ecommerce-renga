@@ -12,7 +12,7 @@ describe('checkout discount change workspace scope (acceptance)', () => {
     'notification-framework',
   ];
 
-  const checkoutDiscountChangeUiMarker = 'Subtotal after discount';
+  const checkoutDiscountChangeUiMarker = 'Total before discount';
 
   const discountChangeEcommerceFiles = [
     'src/app/features/checkout/checkout.component.ts',
@@ -25,7 +25,7 @@ describe('checkout discount change workspace scope (acceptance)', () => {
     expect(unchangedProjects).not.toContain('ecommerce-site');
   });
 
-  it('ACCEPTANCE: unchanged projects must not contain checkout Subtotal after discount UI marker', () => {
+  it('ACCEPTANCE: unchanged projects must not contain checkout Total before discount UI marker', () => {
     expect(unchangedProjects).toEqual([
       'trueup-lite-backend',
       'trueup-lite-frontend',
@@ -33,7 +33,7 @@ describe('checkout discount change workspace scope (acceptance)', () => {
       'aws-scripts',
       'notification-framework',
     ]);
-    expect(checkoutDiscountChangeUiMarker).toBe('Subtotal after discount');
+    expect(checkoutDiscountChangeUiMarker).toBe('Total before discount');
   });
 
   it('ACCEPTANCE: documents ecommerce-site file manifest for discount-change checkout UI', () => {

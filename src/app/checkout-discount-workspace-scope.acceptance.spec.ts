@@ -3,6 +3,7 @@
  */
 describe('checkout discount workspace scope (acceptance)', () => {
   const unchangedProjects = [
+    'trueup-lite-backend',
     'trueup-lite-frontend',
     'trueup-lite-flutter',
     'aws-scripts',
@@ -17,6 +18,7 @@ describe('checkout discount workspace scope (acceptance)', () => {
 
   it('lists unchanged projects that must not ship checkout discount storefront code', () => {
     expect(unchangedProjects).toEqual([
+      'trueup-lite-backend',
       'trueup-lite-frontend',
       'trueup-lite-flutter',
       'aws-scripts',

@@ -82,6 +82,13 @@ describe('CheckoutComponent', () => {
     fixture.detectChanges();
   });
 
+  it('AC-HP-2: totalBeforeDiscount matches displayed merchandise subtotal plus shipping', () => {
+    fixture.componentInstance.form.patchValue({ zipCode: '600001' });
+    fixture.detectChanges();
+    const cmp = fixture.componentInstance;
+    expect(cmp.totalBeforeDiscount()).toBe(cmp.displayedSubtotalBeforeDiscount() + cmp.shippingFee());
+  });
+
   it('shows discount row when evaluation returns a discount', () => {
     fixture.detectChanges();
     const text = fixture.nativeElement.textContent as string;

@@ -7,14 +7,14 @@ import { AdminOfferService } from './core/services/admin-offer.service';
  */
 describe('offers storefront scope (acceptance)', () => {
   const checkoutDiscountSummaryLabel = 'Discount';
-  const checkoutSubtotalAfterDiscountLabel = 'Subtotal after discount';
+  const checkoutTotalBeforeDiscountLabel = 'Total before discount';
 
   it('documents checkout discount summary label contract', () => {
     expect(checkoutDiscountSummaryLabel).toBe('Discount');
   });
 
-  it('documents checkout subtotal-after-discount label contract (discount change)', () => {
-    expect(checkoutSubtotalAfterDiscountLabel).toBe('Subtotal after discount');
+  it('documents checkout total-before-discount label contract (discount change)', () => {
+    expect(checkoutTotalBeforeDiscountLabel).toBe('Total before discount');
   });
 
   it('checkout uses StoreOfferService not AdminOfferService for discounts', () => {
