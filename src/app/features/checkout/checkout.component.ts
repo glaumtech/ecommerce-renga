@@ -94,6 +94,10 @@ export class CheckoutComponent implements OnInit {
   readonly orderTotal = computed(
     () => this.displayedSubtotalAfterDiscount() + this.shippingFee()
   );
+  /** Merchandise plus shipping, before the offer is applied. */
+  readonly totalBeforeDiscount = computed(
+    () => this.displayedSubtotalBeforeDiscount() + this.shippingFee()
+  );
   readonly recognizedName = signal<string | null>(null);
   readonly restoredSession = signal(false);
 

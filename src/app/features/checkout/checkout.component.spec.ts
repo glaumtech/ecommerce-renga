@@ -87,7 +87,14 @@ describe('CheckoutComponent', () => {
     const text = fixture.nativeElement.textContent as string;
     expect(text).toContain('Discount');
     expect(text).toContain('Summer Sale');
-    expect(text).toContain('Subtotal after discount');
+    expect(text).toContain('Total before discount');
+    expect(text).not.toContain('Subtotal after discount');
+    const beforeIdx = text.indexOf('Total before discount');
+    const discountIdx = text.indexOf('Discount');
+    const totalIdx = text.lastIndexOf('Total');
+    expect(beforeIdx).toBeGreaterThan(-1);
+    expect(beforeIdx).toBeLessThan(discountIdx);
+    expect(discountIdx).toBeLessThan(totalIdx);
   });
 
   it('shows merchandise subtotal before discount and after discount from evaluation', () => {
@@ -126,6 +133,7 @@ describe('CheckoutComponent', () => {
     expect(failFixture.componentInstance.orderTotal()).toBe(
       failFixture.componentInstance.cartSubtotal() + failFixture.componentInstance.shippingFee()
     );
+    expect(failFixture.nativeElement.textContent).not.toContain('Total before discount');
     expect(failFixture.nativeElement.textContent).not.toContain('Subtotal after discount');
   }));
 
@@ -135,6 +143,7 @@ describe('CheckoutComponent', () => {
     const loadingFixture = TestBed.createComponent(CheckoutComponent);
     loadingFixture.detectChanges();
     expect(loadingFixture.nativeElement.textContent).toContain('Checking available offers');
+    expect(loadingFixture.nativeElement.textContent).not.toContain('Total before discount');
     expect(loadingFixture.nativeElement.textContent).not.toContain('Subtotal after discount');
     pending.complete();
   });
@@ -151,6 +160,7 @@ describe('CheckoutComponent', () => {
     const zeroFixture = TestBed.createComponent(CheckoutComponent);
     zeroFixture.detectChanges();
     const text = zeroFixture.nativeElement.textContent as string;
+    expect(text).not.toContain('Total before discount');
     expect(text).not.toContain('Subtotal after discount');
     expect(zeroFixture.componentInstance.displayedSubtotalBeforeDiscount()).toBe(100);
   });

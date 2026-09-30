@@ -110,33 +110,40 @@ describe('checkout discount change acceptance (ACCEPTANCE.md)', () => {
       expect(text).toContain('₹120.00');
       expect(text).toContain('Discount (Diwali Damaka Offer)');
       expect(text).toContain('13.50');
+      expect(text).toContain('Total before discount');
+      expect(text).toContain('₹390.00');
+      expect(text).not.toContain(subtotalAfterDiscountLabel);
       expect(mockupFixture.componentInstance.orderTotal()).toBe(376.5);
       expect(text).toContain('₹376.50');
     });
 
-    it('ACCEPTANCE: Subtotal after discount row shows finalAmount from evaluation', () => {
+    it('ACCEPTANCE: Total before discount is merchandise plus shipping and sits above the discount', () => {
+      fixture.componentInstance.form.patchValue({ zipCode: '600001' });
       fixture.detectChanges();
       const text = fixture.nativeElement.textContent as string;
-      expect(text).toContain(subtotalAfterDiscountLabel);
+      expect(text).toContain('Total before discount');
+      expect(text).not.toContain(subtotalAfterDiscountLabel);
+      expect(fixture.componentInstance.totalBeforeDiscount()).toBe(100 + BASE_SHIPPING_FEE);
       expect(fixture.componentInstance.displayedSubtotalAfterDiscount()).toBe(80);
     });
 
-    it('ACCEPTANCE: summary row order before Total matches design (with after-discount line)', () => {
+    it('ACCEPTANCE: summary row order before Total matches design (with before-discount line)', () => {
       fixture.componentInstance.form.patchValue({ zipCode: '600001' });
       fixture.detectChanges();
       const text = fixture.nativeElement.textContent as string;
       const subtotalIdx = text.indexOf('Subtotal (1 items)');
       const shippingIdx = text.indexOf('Shipping (per kg)');
       const disclaimerIdx = text.indexOf('Charges may vary based on the package weight');
+      const beforeIdx = text.indexOf('Total before discount');
       const discountIdx = text.indexOf('Discount (Summer Sale)');
-      const afterIdx = text.indexOf(subtotalAfterDiscountLabel);
       const totalIdx = text.lastIndexOf('Total');
 
       expect(subtotalIdx).toBeGreaterThan(-1);
       expect(subtotalIdx).toBeLessThan(shippingIdx);
       expect(shippingIdx).toBeLessThan(disclaimerIdx);
-      expect(discountIdx).toBeLessThan(afterIdx);
-      expect(afterIdx).toBeLessThan(totalIdx);
+      expect(disclaimerIdx).toBeLessThan(beforeIdx);
+      expect(beforeIdx).toBeLessThan(discountIdx);
+      expect(discountIdx).toBeLessThan(totalIdx);
     });
 
     it('ACCEPTANCE: Total equals finalAmount merchandise plus shipping (80 + fee, not 100 + fee)', () => {

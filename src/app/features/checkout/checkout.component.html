@@ -245,13 +245,13 @@
             <p class="text-xs text-amber-700 mt-1">Charges may vary based on the package weight. If there is a change, we will inform you.</p>
           </div>
           @if (discountAmount() > 0) {
+            <div class="flex justify-between font-medium text-slate-800">
+              <span>Total before discount</span>
+              <span>{{ totalBeforeDiscount() | appCurrency }}</span>
+            </div>
             <div class="flex justify-between text-emerald-700">
               <span>Discount@if (offerLabel()) { ({{ offerLabel() }})}</span>
               <span>-{{ discountAmount() | appCurrency }}</span>
-            </div>
-            <div class="flex justify-between font-medium text-slate-800">
-              <span>Subtotal after discount</span>
-              <span>{{ displayedSubtotalAfterDiscount() | appCurrency }}</span>
             </div>
           } @else if (offersLoading()) {
             <p class="text-xs text-slate-500">Checking available offers...</p>
