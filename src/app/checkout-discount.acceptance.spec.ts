@@ -35,6 +35,18 @@ describe('checkout discount acceptance (ecommerce-site)', () => {
     expect(offers).toBeDefined();
   });
 
+  it('README documents discount-change checkout summary (before/after subtotal, finalAmount, total)', async () => {
+    await TestBed.configureTestingModule({
+      providers: [provideHttpClient()],
+    }).compileComponents();
+    const readme = await firstValueFrom(
+      TestBed.inject(HttpClient).get('/README.md', { responseType: 'text' })
+    );
+    expect(readme.toLowerCase()).toContain('subtotal before discount');
+    expect(readme.toLowerCase()).toContain('subtotal after discount');
+    expect(readme.toLowerCase()).toContain('finalamount');
+  });
+
   it('README documents evaluate-checkout, offerId on store orders, and server re-apply', async () => {
     await TestBed.configureTestingModule({
       providers: [provideHttpClient()],
@@ -124,7 +136,8 @@ describe('checkout discount acceptance (ecommerce-site)', () => {
       const text = fixture.nativeElement.textContent as string;
       expect(text).toContain('Discount');
       expect(fixture.componentInstance.discountAmount()).toBe(20);
-      expect(fixture.componentInstance.orderTotal()).toBe(100 - 20 + BASE_SHIPPING_FEE);
+      expect(fixture.componentInstance.displayedSubtotalBeforeDiscount()).toBe(100);
+      expect(fixture.componentInstance.orderTotal()).toBe(80 + BASE_SHIPPING_FEE);
     });
 
     it('shows offer evaluation loading hint while evaluate-checkout is in flight', () => {
@@ -154,6 +167,7 @@ describe('checkout discount acceptance (ecommerce-site)', () => {
     fixture.detectChanges();
     const text = fixture.nativeElement.textContent as string;
     expect(text).not.toContain('Discount');
+    expect(text).not.toContain('Subtotal after discount');
     expect(text).not.toContain('Checking available offers');
     expect(text).toContain('Total');
     expect(OrderSummaryComponent.name).toBe('OrderSummaryComponent');

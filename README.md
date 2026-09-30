@@ -52,6 +52,8 @@ Staff login at `/admin`. Fulfillment dashboard routes include orders, categories
 
 Storefront **checkout** evaluates configured offers via **`POST /api/offers/evaluate-checkout`** (optional `mobile` + cart lines), shows the best discount in the order summary, and sends optional **`offerId`** on **`POST /api/store/orders`**. The backend re-applies the offer server-side when persisting the order total.
 
+Checkout **order summary** shows merchandise **subtotal before discount** (from `originalAmount` when offers apply), a **discount** line when applicable, **subtotal after discount** (from `finalAmount`), then shipping and **total** (discounted merchandise + shipping).
+
 ## Build
 
 ```bash

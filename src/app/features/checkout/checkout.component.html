@@ -235,7 +235,7 @@
         <div class="space-y-3 mb-4 text-sm text-slate-600 pt-4 border-t border-slate-200">
           <div class="flex justify-between">
             <span>Subtotal ({{ cartCount() }} items)</span>
-            <span>{{ cartSubtotal() | appCurrency }}</span>
+            <span>{{ displayedSubtotalBeforeDiscount() | appCurrency }}</span>
           </div>
           <div>
             <div class="flex justify-between">
@@ -248,6 +248,10 @@
             <div class="flex justify-between text-emerald-700">
               <span>Discount@if (offerLabel()) { ({{ offerLabel() }})}</span>
               <span>-{{ discountAmount() | appCurrency }}</span>
+            </div>
+            <div class="flex justify-between font-medium text-slate-800">
+              <span>Subtotal after discount</span>
+              <span>{{ displayedSubtotalAfterDiscount() | appCurrency }}</span>
             </div>
           } @else if (offersLoading()) {
             <p class="text-xs text-slate-500">Checking available offers...</p>
