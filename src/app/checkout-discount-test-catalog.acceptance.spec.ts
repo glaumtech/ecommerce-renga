@@ -12,6 +12,7 @@ describe('checkout discount test catalog (acceptance)', () => {
     'src/app/features/checkout/checkout.component.spec.ts',
     'src/app/offers-storefront-scope.spec.ts',
     'src/app/offers-feature-scope.spec.ts',
+    'src/app/job-756b05c5616a.acceptance.spec.ts',
   ];
 
   it('lists ecommerce-site specs that guard checkout discount acceptance', () => {

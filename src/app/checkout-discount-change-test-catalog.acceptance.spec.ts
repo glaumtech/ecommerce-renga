@@ -9,6 +9,7 @@ describe('checkout discount change test catalog (acceptance)', () => {
     'src/app/features/checkout/checkout.component.spec.ts',
     'src/app/checkout-discount.acceptance.spec.ts',
     'src/app/checkout-discount-test-catalog.acceptance.spec.ts',
+    'src/app/job-756b05c5616a.acceptance.spec.ts',
   ];
 
   const npmTestCommand = 'npm test -- --watch=false --browsers=ChromeHeadless';

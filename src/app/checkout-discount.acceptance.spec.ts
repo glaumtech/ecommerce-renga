@@ -35,16 +35,18 @@ describe('checkout discount acceptance (ecommerce-site)', () => {
     expect(offers).toBeDefined();
   });
 
-  it('README documents discount-change checkout summary (before/after subtotal, finalAmount, total)', async () => {
+  it('README documents discount-change checkout summary (total before discount, finalAmount, total)', async () => {
     await TestBed.configureTestingModule({
       providers: [provideHttpClient()],
     }).compileComponents();
     const readme = await firstValueFrom(
       TestBed.inject(HttpClient).get('/README.md', { responseType: 'text' })
     );
-    expect(readme.toLowerCase()).toContain('subtotal before discount');
-    expect(readme.toLowerCase()).toContain('subtotal after discount');
-    expect(readme.toLowerCase()).toContain('finalamount');
+    const readmeLower = readme.toLowerCase();
+    expect(readmeLower).toContain('subtotal before discount');
+    expect(readmeLower).toContain('total before discount');
+    expect(readmeLower).toContain('finalamount');
+    expect(readmeLower).toContain('not shown as its own summary row');
   });
 
   it('README documents evaluate-checkout, offerId on store orders, and server re-apply', async () => {
@@ -167,6 +169,7 @@ describe('checkout discount acceptance (ecommerce-site)', () => {
     fixture.detectChanges();
     const text = fixture.nativeElement.textContent as string;
     expect(text).not.toContain('Discount');
+    expect(text).not.toContain('Total before discount');
     expect(text).not.toContain('Subtotal after discount');
     expect(text).not.toContain('Checking available offers');
     expect(text).toContain('Total');
