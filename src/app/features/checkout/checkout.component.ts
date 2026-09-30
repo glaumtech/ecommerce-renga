@@ -73,11 +73,26 @@ export class CheckoutComponent implements OnInit {
   });
   readonly shippingFee = computed(() => calculateShippingFee(this.zipCode()));
   readonly discountAmount = signal(0);
+  readonly merchandiseSubtotalBeforeDiscount = signal<number | null>(null);
+  readonly merchandiseSubtotalAfterDiscount = signal<number | null>(null);
   readonly selectedOfferId = signal<number | null>(null);
   readonly offerLabel = signal<string | null>(null);
   readonly offersLoading = signal(false);
+  readonly displayedSubtotalBeforeDiscount = computed(
+    () => this.merchandiseSubtotalBeforeDiscount() ?? this.cartSubtotal()
+  );
+  readonly displayedSubtotalAfterDiscount = computed(() => {
+    if (this.discountAmount() <= 0) {
+      return this.cartSubtotal();
+    }
+    const fromEvaluation = this.merchandiseSubtotalAfterDiscount();
+    if (fromEvaluation != null) {
+      return fromEvaluation;
+    }
+    return Math.max(0, this.displayedSubtotalBeforeDiscount() - this.discountAmount());
+  });
   readonly orderTotal = computed(
-    () => Math.max(0, this.cartSubtotal() - this.discountAmount()) + this.shippingFee()
+    () => this.displayedSubtotalAfterDiscount() + this.shippingFee()
   );
   readonly recognizedName = signal<string | null>(null);
   readonly restoredSession = signal(false);
@@ -294,6 +309,8 @@ export class CheckoutComponent implements OnInit {
   private refreshOfferEvaluation(items: CartItem[], mobile: string): void {
     if (items.length === 0) {
       this.discountAmount.set(0);
+      this.merchandiseSubtotalBeforeDiscount.set(null);
+      this.merchandiseSubtotalAfterDiscount.set(null);
       this.selectedOfferId.set(null);
       this.offerLabel.set(null);
       return;
@@ -306,11 +323,15 @@ export class CheckoutComponent implements OnInit {
       .subscribe({
         next: (evaluation) => {
           this.discountAmount.set(evaluation.discountAmount ?? 0);
+          this.merchandiseSubtotalBeforeDiscount.set(evaluation.originalAmount ?? null);
+          this.merchandiseSubtotalAfterDiscount.set(evaluation.finalAmount ?? null);
           this.selectedOfferId.set(evaluation.bestOfferId ?? null);
           this.offerLabel.set(evaluation.offerName ?? null);
         },
         error: () => {
           this.discountAmount.set(0);
+          this.merchandiseSubtotalBeforeDiscount.set(null);
+          this.merchandiseSubtotalAfterDiscount.set(null);
           this.selectedOfferId.set(null);
           this.offerLabel.set(null);
         },

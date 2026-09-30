@@ -87,15 +87,25 @@ describe('CheckoutComponent', () => {
     const text = fixture.nativeElement.textContent as string;
     expect(text).toContain('Discount');
     expect(text).toContain('Summer Sale');
+    expect(text).toContain('Subtotal after discount');
   });
 
-  it('orderTotal equals max(0, subtotal - discount) + shipping for entered PIN', () => {
+  it('shows merchandise subtotal before discount and after discount from evaluation', () => {
+    fixture.detectChanges();
+    expect(fixture.componentInstance.displayedSubtotalBeforeDiscount()).toBe(100);
+    expect(fixture.componentInstance.displayedSubtotalAfterDiscount()).toBe(80);
+    const text = fixture.nativeElement.textContent as string;
+    expect(text).toContain('Subtotal (1 items)');
+  });
+
+  it('orderTotal equals subtotal after discount plus shipping for entered PIN', () => {
     fixture.componentInstance.form.patchValue({ zipCode: '600001' });
     fixture.detectChanges();
     expect(fixture.componentInstance.discountAmount()).toBe(20);
-    expect(fixture.componentInstance.cartSubtotal()).toBe(100);
+    expect(fixture.componentInstance.displayedSubtotalBeforeDiscount()).toBe(100);
+    expect(fixture.componentInstance.displayedSubtotalAfterDiscount()).toBe(80);
     expect(fixture.componentInstance.shippingFee()).toBe(BASE_SHIPPING_FEE);
-    expect(fixture.componentInstance.orderTotal()).toBe(100 - 20 + BASE_SHIPPING_FEE);
+    expect(fixture.componentInstance.orderTotal()).toBe(80 + BASE_SHIPPING_FEE);
   });
 
   it('calls evaluateCheckout with mobile when checkout mobile is set', () => {
@@ -116,6 +126,7 @@ describe('CheckoutComponent', () => {
     expect(failFixture.componentInstance.orderTotal()).toBe(
       failFixture.componentInstance.cartSubtotal() + failFixture.componentInstance.shippingFee()
     );
+    expect(failFixture.nativeElement.textContent).not.toContain('Subtotal after discount');
   }));
 
   it('shows offer evaluation loading hint while evaluate-checkout is in flight', () => {
@@ -124,7 +135,57 @@ describe('CheckoutComponent', () => {
     const loadingFixture = TestBed.createComponent(CheckoutComponent);
     loadingFixture.detectChanges();
     expect(loadingFixture.nativeElement.textContent).toContain('Checking available offers');
+    expect(loadingFixture.nativeElement.textContent).not.toContain('Subtotal after discount');
     pending.complete();
+  });
+
+  it('hides discount rows when evaluate-checkout returns zero discount', () => {
+    storeOfferService.evaluateCheckout.and.returnValue(
+      of({
+        applicableOffers: [],
+        originalAmount: 100,
+        discountAmount: 0,
+        finalAmount: 100,
+      })
+    );
+    const zeroFixture = TestBed.createComponent(CheckoutComponent);
+    zeroFixture.detectChanges();
+    const text = zeroFixture.nativeElement.textContent as string;
+    expect(text).not.toContain('Subtotal after discount');
+    expect(zeroFixture.componentInstance.displayedSubtotalBeforeDiscount()).toBe(100);
+  });
+
+  it('prefers evaluation originalAmount over cart total when they differ', () => {
+    storeOfferService.evaluateCheckout.and.returnValue(
+      of({
+        applicableOffers: [],
+        bestOfferId: 1,
+        offerName: 'Offer',
+        originalAmount: 270,
+        discountAmount: 13.5,
+        finalAmount: 256.5,
+      })
+    );
+    const diffFixture = TestBed.createComponent(CheckoutComponent);
+    diffFixture.detectChanges();
+    expect(diffFixture.componentInstance.displayedSubtotalBeforeDiscount()).toBe(270);
+    expect(diffFixture.componentInstance.displayedSubtotalAfterDiscount()).toBe(256.5);
+  });
+
+  it('computes after-discount merchandise when finalAmount is omitted', () => {
+    storeOfferService.evaluateCheckout.and.returnValue(
+      of({
+        applicableOffers: [],
+        bestOfferId: 1,
+        offerName: 'Offer',
+        originalAmount: 100,
+        discountAmount: 20,
+        finalAmount: undefined as unknown as number,
+      })
+    );
+    const fallbackFixture = TestBed.createComponent(CheckoutComponent);
+    fallbackFixture.detectChanges();
+    expect(fallbackFixture.componentInstance.displayedSubtotalAfterDiscount()).toBe(80);
   });
 
   it('includes offerId when placing order', () => {
