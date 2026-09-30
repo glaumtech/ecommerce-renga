@@ -1,34 +1,32 @@
 /**
- * Acceptance: scope and unchanged projects for ecommerce admin offers feature.
+ * Acceptance: scope and changed projects for ecommerce checkout discount feature.
  */
 describe('offers admin feature scope (acceptance)', () => {
   const adminOffersRoute = '/admin/dashboard/offers';
 
-  const changedProject = 'ecommerce-site';
+  const changedProjects = ['ecommerce-site', 'trueup-lite-backend'];
 
   const unchangedProjects = [
-    'trueup-lite-backend',
     'trueup-lite-frontend',
     'trueup-lite-flutter',
     'aws-scripts',
     'notification-framework',
   ];
 
-  const ecommerceOffersFeatureFiles = [
-    'src/app/core/models/offer.model.ts',
-    'src/app/core/services/admin-offer.service.ts',
-    'src/app/core/services/admin-offer-catalog.service.ts',
-    'src/app/features/admin/offers/admin-offers.component.ts',
+  const ecommerceCheckoutDiscountFiles = [
+    'src/app/core/services/store-offer.service.ts',
+    'src/app/features/checkout/checkout.component.ts',
+    'src/app/features/checkout/checkout.component.html',
   ];
 
-  it('declares ecommerce-site as the sole changed project for this feature', () => {
-    expect(changedProject).toBe('ecommerce-site');
-    expect(unchangedProjects).not.toContain(changedProject);
+  it('declares ecommerce-site and backend as changed projects for checkout discounts', () => {
+    expect(changedProjects).toContain('ecommerce-site');
+    expect(changedProjects).toContain('trueup-lite-backend');
+    expect(unchangedProjects).not.toContain('ecommerce-site');
   });
 
-  it('lists workspace projects that must not contain offer-admin feature diffs', () => {
+  it('lists workspace projects that must not contain checkout discount feature diffs', () => {
     expect(unchangedProjects).toEqual([
-      'trueup-lite-backend',
       'trueup-lite-frontend',
       'trueup-lite-flutter',
       'aws-scripts',
@@ -40,12 +38,8 @@ describe('offers admin feature scope (acceptance)', () => {
     expect(adminOffersRoute).toBe('/admin/dashboard/offers');
   });
 
-  it('documents ecommerce-site offers feature file manifest', () => {
-    expect(ecommerceOffersFeatureFiles.length).toBeGreaterThanOrEqual(4);
-    expect(ecommerceOffersFeatureFiles.every((p) => p.startsWith('src/app/'))).toBe(true);
-  });
-
-  it('documents backend as consumed API-only (trueup-lite-backend unchanged)', () => {
-    expect(unchangedProjects).toContain('trueup-lite-backend');
+  it('documents ecommerce-site checkout discount file manifest', () => {
+    expect(ecommerceCheckoutDiscountFiles.length).toBeGreaterThanOrEqual(3);
+    expect(ecommerceCheckoutDiscountFiles.every((p) => p.startsWith('src/app/'))).toBe(true);
   });
 });

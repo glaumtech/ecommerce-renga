@@ -182,3 +182,27 @@ export const TARGET_AUDIENCE_INFO: Record<TargetAudience, string> = {
   [TargetAudience.FIRST_TIME_BUYERS]: 'First-time Buyers',
   [TargetAudience.REPEAT_CUSTOMERS]: 'Repeat Customers',
 };
+
+export interface CheckoutCartLine {
+  productId: number;
+  productName?: string;
+  quantity: number;
+  price: number;
+}
+
+export interface OfferApplicationResult {
+  offerId: number;
+  offerName: string;
+  originalAmount: number;
+  discountAmount: number;
+  finalAmount: number;
+}
+
+export interface CheckoutOfferEvaluation {
+  applicableOffers: Offer[];
+  bestOfferId?: number;
+  offerName?: string;
+  originalAmount: number;
+  discountAmount: number;
+  finalAmount: number;
+}

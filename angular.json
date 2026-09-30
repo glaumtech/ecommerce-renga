@@ -166,6 +166,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "README.md",
+                "input": ".",
+                "output": "/"
               }
             ],
             "styles": [

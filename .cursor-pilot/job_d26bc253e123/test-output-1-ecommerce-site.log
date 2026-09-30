@@ -1,0 +1,82 @@
+
+> ananda-store@0.0.0 test
+> ng test --watch=false --browsers=ChromeHeadless
+
+Node.js version v23.7.0 detected.
+Odd numbered Node.js versions will not enter LTS status and should not be used for production. For more information, please see https://nodejs.org/en/about/previous-releases/.
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+
+node:fs - Error: Module build failed: UnhandledSchemeError: Reading from "node:fs" is not handled by plugins (Unhandled scheme).
+Webpack supports "data:" and "file:" URIs by default.
+You may need an additional plugin to handle "node:" URIs.
+
+node:path - Error: Module build failed: UnhandledSchemeError: Reading from "node:path" is not handled by plugins (Unhandled scheme).
+Webpack supports "data:" and "file:" URIs by default.
+You may need an additional plugin to handle "node:" URIs.
+
+Error: [96msrc/app/checkout-discount.acceptance.spec.ts[0m:[93m1[0m:[93m30[0m - [91merror[0m[90m TS2307: [0mCannot find module 'node:fs' or its corresponding type declarations.
+
+[7m1[0m import { readFileSync } from 'node:fs';
+[7m [0m [91m                             ~~~~~~~~~[0m
+
+
+Error: [96msrc/app/checkout-discount.acceptance.spec.ts[0m:[93m2[0m:[93m22[0m - [91merror[0m[90m TS2307: [0mCannot find module 'node:path' or its corresponding type declarations.
+
+[7m2[0m import { join } from 'node:path';
+[7m [0m [91m                     ~~~~~~~~~~~[0m
+
+
+Error: [96msrc/app/checkout-discount.acceptance.spec.ts[0m:[93m12[0m:[93m27[0m - [91merror[0m[90m TS2591: [0mCannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+
+[7m12[0m   const readmePath = join(process.cwd(), 'README.md');
+[7m  [0m [91m                          ~~~~~~~[0m
+
+
+Error: [96msrc/app/checkout-discount.acceptance.spec.ts[0m:[93m14[0m:[93m5[0m - [91merror[0m[90m TS2591: [0mCannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+
+[7m14[0m     process.cwd(),
+[7m  [0m [91m    ~~~~~~~[0m
+
+
+Error: [96msrc/app/checkout-discount.acceptance.spec.ts[0m:[93m48[0m:[93m12[0m - [91merror[0m[90m TS2591: [0mCannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+
+[7m48[0m       join(process.cwd(), 'src/app/shared/components/order-summary/order-summary.component.ts'),
+[7m  [0m [91m           ~~~~~~~[0m
+
+
+Error: [96msrc/app/core/services/store-offer.service.spec.ts[0m:[93m86[0m:[93m7[0m - [91merror[0m[90m TS2739: [0mType '{ id: number; name: string; price: number; quantity: number; image: string; }' is missing the following properties from type 'CartItem': slug, category, rating, reviews, desc
+
+[7m86[0m       { id: 3, name: 'Brass Lamp', price: 250, quantity: 2, image: '' },
+[7m  [0m [91m      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+Error: [96msrc/app/features/checkout/checkout.component.spec.ts[0m:[93m45[0m:[93m105[0m - [91merror[0m[90m TS2345: [0mArgument of type '{ items: WritableSignal<{ id: number; name: string; price: number; quantity: number; image: string; }[]>; cartTotal: WritableSignal<number>; cartCount: WritableSignal<number>; }' is not assignable to parameter of type 'readonly (keyof CartService)[] | { readonly items?: Signal<CartItem[]> | undefined; readonly cartTotal?: Signal<number> | undefined; readonly cartCount?: Signal<...> | undefined; ... 6 more ...; getCheckoutItems?: (() => { ...; }[]) | undefined; } | undefined'.
+  Types of property 'items' are incompatible.
+    Type 'WritableSignal<{ id: number; name: string; price: number; quantity: number; image: string; }[]>' is not assignable to type 'Signal<CartItem[]>'.
+      Type 'WritableSignal<{ id: number; name: string; price: number; quantity: number; image: string; }[]>' is not assignable to type '() => CartItem[]'.
+        Type '{ id: number; name: string; price: number; quantity: number; image: string; }[]' is not assignable to type 'CartItem[]'.
+          Type '{ id: number; name: string; price: number; quantity: number; image: string; }' is missing the following properties from type 'CartItem': slug, category, rating, reviews, desc
+
+[7m 45[0m     const cartService = jasmine.createSpyObj<CartService>('CartService', ['getCheckoutItems', 'clear'], {
+[7m   [0m [91m                                                                                                        ~[0m
+[7m 46[0m       items: signal([{ id: 1, name: 'Item', price: 100, quantity: 1, image: '' }]),
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m...[0m 
+[7m 48[0m       cartCount: signal(1),
+[7m   [0m [91m~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[7m 49[0m     });
+[7m   [0m [91m~~~~~[0m
+
+
+
+[32m30 09 2026 12:15:49.153:INFO [karma-server]: [39mKarma v6.4.4 server started at http://localhost:41400/
+[32m30 09 2026 12:15:49.156:INFO [launcher]: [39mLaunching browsers ChromeHeadless with concurrency unlimited
+[91m30 09 2026 12:15:49.156:ERROR [karma-server]: [39mError: Found 1 load error
+    at Server.<anonymous> (/Users/Praveen/.cursor/worktrees/ecommerce-site/pilot-job_d26bc253e123-proj_0b4da127034b/node_modules/karma/lib/server.js:243:26)
+    at Object.onceWrapper (node:events:621:28)
+    at Server.emit (node:events:519:35)
+    at emitListeningNT (node:net:1980:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:89:21)
+✔ Browser application bundle generation complete.
+✔ Browser application bundle generation complete.
