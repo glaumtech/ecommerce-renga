@@ -1,13 +1,15 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, effect, inject, signal, untracked } from '@angular/core';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { debounceTime, distinctUntilChanged, map, of, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, finalize, map, of, switchMap } from 'rxjs';
 import { CartService } from '../../core/services/cart.service';
 import { AuthService } from '../../core/services/auth.service';
 import { OrderService, SavedCheckoutAddress } from '../../core/services/order.service';
+import { StoreOfferService } from '../../core/services/store-offer.service';
 import { SeoService } from '../../core/services/seo.service';
 import { PAYMENT_METHOD_COD } from '../../core/models/order.model';
+import { CartItem } from '../../core/models/cart.model';
 import { calculateShippingFee } from '../../core/utils/shipping-fee.util';
 import { AppCurrencyPipe } from '../../shared/pipes/app-currency.pipe';
 import { ProductImagePipe } from '../../shared/pipes/product-image.pipe';
@@ -37,6 +39,7 @@ export class CheckoutComponent implements OnInit {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly seoService = inject(SeoService);
+  private readonly storeOfferService = inject(StoreOfferService);
 
   readonly cartItems = this.cartService.items;
   readonly cartSubtotal = this.cartService.cartTotal;
@@ -65,8 +68,17 @@ export class CheckoutComponent implements OnInit {
   private readonly zipCode = toSignal(this.form.controls.zipCode.valueChanges, {
     initialValue: this.form.controls.zipCode.value,
   });
+  private readonly checkoutMobile = toSignal(this.form.controls.mobile.valueChanges, {
+    initialValue: this.form.controls.mobile.value,
+  });
   readonly shippingFee = computed(() => calculateShippingFee(this.zipCode()));
-  readonly cartTotal = computed(() => this.cartSubtotal() + this.shippingFee());
+  readonly discountAmount = signal(0);
+  readonly selectedOfferId = signal<number | null>(null);
+  readonly offerLabel = signal<string | null>(null);
+  readonly offersLoading = signal(false);
+  readonly orderTotal = computed(
+    () => Math.max(0, this.cartSubtotal() - this.discountAmount()) + this.shippingFee()
+  );
   readonly recognizedName = signal<string | null>(null);
   readonly restoredSession = signal(false);
 
@@ -80,6 +92,12 @@ export class CheckoutComponent implements OnInit {
         switchMap((mobile) => this.loginAndLoadAddresses(mobile))
       )
       .subscribe((addresses) => this.applyLookupResult(addresses));
+
+    effect(() => {
+      const items = this.cartService.items();
+      const mobile = (this.checkoutMobile() ?? '').trim();
+      untracked(() => this.refreshOfferEvaluation(items, mobile));
+    });
   }
 
   ngOnInit(): void {
@@ -119,6 +137,7 @@ export class CheckoutComponent implements OnInit {
         zipCode: value.zipCode.trim(),
         paymentMethod: PAYMENT_METHOD_COD,
         items: this.cartService.getCheckoutItems(),
+        offerId: this.selectedOfferId() ?? undefined,
       })
       .subscribe({
         next: () => {
@@ -270,5 +289,31 @@ export class CheckoutComponent implements OnInit {
     });
     this.form.markAsUntouched();
     this.form.markAsPristine();
+  }
+
+  private refreshOfferEvaluation(items: CartItem[], mobile: string): void {
+    if (items.length === 0) {
+      this.discountAmount.set(0);
+      this.selectedOfferId.set(null);
+      this.offerLabel.set(null);
+      return;
+    }
+
+    this.offersLoading.set(true);
+    this.storeOfferService
+      .evaluateCheckout(mobile, this.storeOfferService.toCartLines(items))
+      .pipe(finalize(() => this.offersLoading.set(false)))
+      .subscribe({
+        next: (evaluation) => {
+          this.discountAmount.set(evaluation.discountAmount ?? 0);
+          this.selectedOfferId.set(evaluation.bestOfferId ?? null);
+          this.offerLabel.set(evaluation.offerName ?? null);
+        },
+        error: () => {
+          this.discountAmount.set(0);
+          this.selectedOfferId.set(null);
+          this.offerLabel.set(null);
+        },
+      });
   }
 }

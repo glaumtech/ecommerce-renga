@@ -46,6 +46,7 @@ export interface CheckoutPayload {
   zipCode: string;
   paymentMethod: string;
   items: { productId: number; quantity: number }[];
+  offerId?: number;
 }
 
 export function normalizeOrderStatus(status: string): OrderStatus {

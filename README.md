@@ -50,6 +50,8 @@ mvn spring-boot:run
 
 Staff login at `/admin`. Fulfillment dashboard routes include orders, categories, video ads, Google reviews, and **Offers & Discounts** at `/admin/dashboard/offers`. The offers screen calls the TrueUp Lite backend **`/api/offers`** API (CRUD, search, toggle status, statistics) and catalog helpers (`/items/getAll`, `/categories`, `/brands`).
 
+Storefront **checkout** evaluates configured offers via **`POST /api/offers/evaluate-checkout`** (optional `mobile` + cart lines), shows the best discount in the order summary, and sends optional **`offerId`** on **`POST /api/store/orders`**. The backend re-applies the offer server-side when persisting the order total.
+
 ## Build
 
 ```bash
