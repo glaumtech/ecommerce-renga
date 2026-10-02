@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { SCAN_TO_CONNECT_LINKTREE_URL } from '../../../core/constants/brand-links.constants';
 import { getCategoryHubByName } from '../../../core/constants/category-seo.constants';
 import { ProductService } from '../../../core/services/product.service';
 
@@ -30,7 +31,23 @@ import { ProductService } from '../../../core/services/product.service';
             </svg>
             Trichy &middot; 90802-98354
           </p>
-     
+          <div class="mt-4 max-w-[10rem]">
+            <h4 class="text-white font-semibold mb-4">Scan to Connect</h4>
+            <a
+              [href]="scanToConnectUrl"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-block bg-white rounded-lg p-2 border border-amber-200/30"
+            >
+              <img
+                src="scan-to-connect-linktree.png"
+                alt="Scan to connect to our Linktree bio with social media and website links"
+                width="140"
+                height="140"
+                class="block w-[140px] h-[140px] object-contain"
+              />
+            </a>
+          </div>
         </div>
         <div>
           <h4 class="text-white font-semibold mb-4">Shop</h4>
@@ -88,6 +105,7 @@ export class FooterComponent implements OnInit {
   private readonly productService = inject(ProductService);
 
   readonly currentYear = new Date().getFullYear();
+  readonly scanToConnectUrl = SCAN_TO_CONNECT_LINKTREE_URL;
   readonly mainCategories = computed(() =>
     [...this.productService.categories()].sort((a, b) =>
       a.name.localeCompare(b.name, undefined, { sensitivity: 'base' })

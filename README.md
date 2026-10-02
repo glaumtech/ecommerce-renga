@@ -41,6 +41,7 @@ mvn spring-boot:run
 
 ## Architecture
 
+- **Storefront footer — Scan to Connect**: QR image at `public/scan-to-connect-linktree.png` links to the Linktree bio via `SCAN_TO_CONNECT_LINKTREE_URL` in `src/app/core/constants/brand-links.constants.ts`.
 - **Lazy-loaded routes**: Home, Shop, Cart, Checkout, Account
 - **Signal-based services**: ProductService, CartService, OrderService, AuthService
 - **Session auth**: `/reg/login` with `withCredentials` (cookie-based)
