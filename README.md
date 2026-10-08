@@ -45,6 +45,7 @@ mvn spring-boot:run
 - **Signal-based services**: ProductService, CartService, OrderService, AuthService
 - **Session auth**: `/reg/login` with `withCredentials` (cookie-based)
 - **Store API**: `/api/store/products`, `/api/store/categories`, `/api/store/orders`
+- **Ecommerce-only out of stock**: POS Product Master can flag items unavailable on the shop (`ecommerceOutOfStock`); the storefront blocks add-to-cart/checkout and shows “Will be available soon” while the backend rejects orders for those lines.
 
 ## Admin portal
 

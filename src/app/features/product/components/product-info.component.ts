@@ -1,6 +1,10 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { Product } from '../../../core/models/product.model';
 import { AppCurrencyPipe } from '../../../shared/pipes/app-currency.pipe';
+import {
+  ECOMMERCE_AVAILABLE_SOON,
+  isProductPurchasable,
+} from '../../../core/utils/product-availability.util';
 @Component({
   selector: 'app-product-info',
   imports: [AppCurrencyPipe],
@@ -27,7 +31,8 @@ import { AppCurrencyPipe } from '../../../shared/pipes/app-currency.pipe';
           <button
             type="button"
             (click)="decrement.emit()"
-            class="px-3 py-2 text-slate-600 hover:bg-slate-50 transition-colors"
+            [disabled]="!isPurchasable()"
+            class="px-3 py-2 text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             aria-label="Decrease quantity"
           >
             −
@@ -36,13 +41,16 @@ import { AppCurrencyPipe } from '../../../shared/pipes/app-currency.pipe';
           <button
             type="button"
             (click)="increment.emit()"
-            class="px-3 py-2 text-slate-600 hover:bg-slate-50 transition-colors"
+            [disabled]="!isPurchasable()"
+            class="px-3 py-2 text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             aria-label="Increase quantity"
           >
             +
           </button>
         </div>
-        @if (product().qty != null && product().qty! > 0) {
+        @if (product().ecommerceOutOfStock) {
+          <span class="text-sm text-amber-600 font-medium">{{ availableSoon }}</span>
+        } @else if (product().qty != null && product().qty! > 0) {
           <span class="text-sm text-green-600 font-medium">In stock</span>
         } @else {
           <span class="text-sm text-red-600 font-medium">Out of stock</span>
@@ -53,7 +61,7 @@ import { AppCurrencyPipe } from '../../../shared/pipes/app-currency.pipe';
         <button
           type="button"
           (click)="buyNow.emit()"
-          [disabled]="!inStock()"
+          [disabled]="!isPurchasable()"
           class="flex-1 bg-orange-600 hover:bg-orange-700 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-colors"
         >
           Buy Now
@@ -61,7 +69,7 @@ import { AppCurrencyPipe } from '../../../shared/pipes/app-currency.pipe';
         <button
           type="button"
           (click)="addToCart.emit()"
-          [disabled]="!inStock()"
+          [disabled]="!isPurchasable()"
           class="flex-1 border-2 border-orange-600 text-orange-600 hover:bg-orange-50 disabled:border-slate-300 disabled:text-slate-400 disabled:cursor-not-allowed font-semibold py-3 px-6 rounded-lg transition-colors"
         >
           Add to Cart
@@ -78,8 +86,9 @@ export class ProductInfoComponent {
   readonly addToCart = output<void>();
   readonly buyNow = output<void>();
 
-  inStock(): boolean {
-    const qty = this.product().qty;
-    return qty == null || qty > 0;
+  readonly availableSoon = ECOMMERCE_AVAILABLE_SOON;
+
+  isPurchasable(): boolean {
+    return isProductPurchasable(this.product());
   }
 }

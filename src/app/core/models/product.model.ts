@@ -20,6 +20,7 @@ export interface Product {
   desc: string;
   brand?: string;
   qty?: number;
+  ecommerceOutOfStock?: boolean;
   seoTitle?: string;
   seoDescription?: string;
   seoRobots?: string;

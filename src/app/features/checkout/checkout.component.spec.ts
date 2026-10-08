@@ -205,6 +205,15 @@ describe('CheckoutComponent', () => {
     expect(fallbackFixture.componentInstance.displayedSubtotalAfterDiscount()).toBe(80);
   });
 
+  it('AC-EC-07 allows checkout when all cart lines are purchasable', () => {
+    expect(fixture.componentInstance.hasUnavailableItems()).toBe(false);
+    const placeButtons = fixture.nativeElement.querySelectorAll('button');
+    const submit = Array.from(placeButtons).find((btn) =>
+      (btn as HTMLButtonElement).textContent?.includes('Place Order')
+    ) as HTMLButtonElement;
+    expect(submit.disabled).toBe(false);
+  });
+
   it('includes offerId when placing order', () => {
     fixture.componentInstance.form.patchValue({
       firstName: 'A',
@@ -219,5 +228,107 @@ describe('CheckoutComponent', () => {
     expect(orderService.placeOrder).toHaveBeenCalled();
     const payload = orderService.placeOrder.calls.mostRecent().args[0];
     expect(payload.offerId).toBe(5);
+  });
+});
+
+describe('CheckoutComponent unavailable cart (AC-EC-06)', () => {
+  let orderService: jasmine.SpyObj<OrderService>;
+  let storeOfferService: jasmine.SpyObj<StoreOfferService>;
+  let flaggedFixture: ComponentFixture<CheckoutComponent>;
+
+  beforeEach(async () => {
+    orderService = jasmine.createSpyObj<OrderService>(
+      'OrderService',
+      [
+        'placeOrder',
+        'loadAddressesByMobile',
+        'setLookupMobile',
+        'clearAddresses',
+        'loadAddressesForCurrentUser',
+      ],
+      {
+        loading: signal(false),
+        addressesLoading: signal(false),
+        savedAddresses: signal([]),
+        error: signal(null),
+        lookupMobile: signal(null),
+      }
+    );
+    orderService.loadAddressesByMobile.and.returnValue(of([]));
+    orderService.loadAddressesForCurrentUser.and.returnValue(of([]));
+
+    storeOfferService = jasmine.createSpyObj<StoreOfferService>('StoreOfferService', [
+      'evaluateCheckout',
+      'toCartLines',
+    ]);
+    storeOfferService.toCartLines.and.returnValue([{ productId: 1, quantity: 1, price: 100 }]);
+    storeOfferService.evaluateCheckout.and.returnValue(
+      of({
+        applicableOffers: [],
+        originalAmount: 100,
+        discountAmount: 0,
+        finalAmount: 100,
+      })
+    );
+
+    const flaggedCart = jasmine.createSpyObj<CartService>('CartService', ['getCheckoutItems', 'clear'], {
+      items: signal([
+        mockCartItem({
+          id: 1,
+          name: 'Soon',
+          price: 100,
+          quantity: 1,
+          ecommerceOutOfStock: true,
+        }),
+      ]),
+      cartTotal: signal(100),
+      cartCount: signal(1),
+    });
+    flaggedCart.getCheckoutItems.and.returnValue([{ productId: 1, quantity: 1 }]);
+
+    await TestBed.configureTestingModule({
+      imports: [CheckoutComponent],
+      providers: [
+        provideRouter([]),
+        { provide: CartService, useValue: flaggedCart },
+        { provide: OrderService, useValue: orderService },
+        { provide: StoreOfferService, useValue: storeOfferService },
+        {
+          provide: AuthService,
+          useValue: { isAuthenticated: () => false, currentUser: () => null },
+        },
+        { provide: SeoService, useValue: { applyNoIndex: () => undefined } },
+      ],
+    }).compileComponents();
+
+    flaggedFixture = TestBed.createComponent(CheckoutComponent);
+    flaggedFixture.detectChanges();
+  });
+
+  it('shows banner and disables place order', () => {
+    const text = flaggedFixture.nativeElement.textContent as string;
+    expect(text).toContain('Will be available soon');
+    expect(flaggedFixture.componentInstance.hasUnavailableItems()).toBe(true);
+    const placeButtons = flaggedFixture.nativeElement.querySelectorAll('button');
+    const disabledSubmit = Array.from(placeButtons).some(
+      (btn) =>
+        (btn as HTMLButtonElement).textContent?.includes('Place Order') &&
+        (btn as HTMLButtonElement).disabled
+    );
+    expect(disabledSubmit).toBe(true);
+  });
+
+  it('handleCheckout does not call placeOrder', () => {
+    flaggedFixture.componentInstance.form.patchValue({
+      firstName: 'A',
+      lastName: 'B',
+      mobile: '9876543210',
+      streetAddress: '1 Main',
+      city: 'Chennai',
+      state: 'TN',
+      zipCode: '600001',
+    });
+    flaggedFixture.componentInstance.handleCheckout();
+    expect(orderService.placeOrder).not.toHaveBeenCalled();
   });
 });

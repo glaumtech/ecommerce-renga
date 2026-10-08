@@ -21,6 +21,7 @@ interface StoreProductDto {
   mainCategory?: string;
   brand?: string;
   qty?: number;
+  ecommerceOutOfStock?: boolean;
   image?: string;
   media?: StoreProductMediaDto[];
   rating?: number;
@@ -209,6 +210,7 @@ export class ProductService {
       desc: dto.description || '',
       brand: dto.brand,
       qty: dto.qty,
+      ecommerceOutOfStock: dto.ecommerceOutOfStock,
       seoTitle: dto.seoTitle,
       seoDescription: dto.seoDescription,
       seoRobots: dto.seoRobots,

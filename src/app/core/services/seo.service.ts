@@ -4,6 +4,7 @@ import { Meta, Title } from '@angular/platform-browser';
 import { CategoryHubSeo, getCategoryHubByName } from '../constants/category-seo.constants';
 import { GOOGLE_REVIEWS_LISTING } from '../data/google-reviews';
 import { Product } from '../models/product.model';
+import { isProductPurchasable } from '../utils/product-availability.util';
 import { StoreMetaTag, StoreSeoSettings } from '../models/store-seo.model';
 
 @Injectable({ providedIn: 'root' })
@@ -348,7 +349,7 @@ export class SeoService {
     image: string
   ): void {
     const currency = settings.currency || 'INR';
-    const availability = (product.qty ?? 0) > 0
+    const availability = isProductPurchasable(product)
       ? 'https://schema.org/InStock'
       : 'https://schema.org/OutOfStock';
 

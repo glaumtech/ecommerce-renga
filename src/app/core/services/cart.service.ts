@@ -4,6 +4,7 @@ import { CartItem } from '../models/cart.model';
 import { resolveProductImageUrl } from '../utils/product-image.util';
 import { getLocalItem, isBrowserPlatform, setLocalItem } from '../utils/browser-storage.util';
 import { BASE_SHIPPING_FEE } from '../utils/shipping-fee.util';
+import { isProductPurchasable } from '../utils/product-availability.util';
 
 const CART_STORAGE_KEY = 'ananda_cart';
 
@@ -33,7 +34,10 @@ export class CartService {
     });
   }
 
-  addToCart(product: Product, quantity = 1): void {
+  addToCart(product: Product, quantity = 1): boolean {
+    if (!isProductPurchasable(product)) {
+      return false;
+    }
     const qty = Math.max(1, quantity);
     this.cart.update((prev) => {
       const existing = prev.find((item) => item.id === product.id);
@@ -44,6 +48,7 @@ export class CartService {
       }
       return [...prev, { ...product, image: resolveProductImageUrl(product.image), quantity: qty }];
     });
+    return true;
   }
 
   updateQuantity(id: number, delta: number): void {

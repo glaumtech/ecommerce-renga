@@ -13,6 +13,10 @@ import { CartItem } from '../../core/models/cart.model';
 import { calculateShippingFee } from '../../core/utils/shipping-fee.util';
 import { AppCurrencyPipe } from '../../shared/pipes/app-currency.pipe';
 import { ProductImagePipe } from '../../shared/pipes/product-image.pipe';
+import {
+  ECOMMERCE_AVAILABLE_SOON,
+  isProductPurchasable,
+} from '../../core/utils/product-availability.util';
 
 const MOBILE_PATTERN = /^[6-9]\d{9}$/;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -100,6 +104,10 @@ export class CheckoutComponent implements OnInit {
   );
   readonly recognizedName = signal<string | null>(null);
   readonly restoredSession = signal(false);
+  readonly unavailableMessage = ECOMMERCE_AVAILABLE_SOON;
+  readonly hasUnavailableItems = computed(() =>
+    this.cartItems().some((item) => !isProductPurchasable(item))
+  );
 
   constructor() {
     this.form.controls.mobile.valueChanges
@@ -130,6 +138,9 @@ export class CheckoutComponent implements OnInit {
   }
 
   handleCheckout(): void {
+    if (this.hasUnavailableItems()) {
+      return;
+    }
     if (this.cartService.items().length === 0) {
       void this.router.navigate(['/cart']);
       return;

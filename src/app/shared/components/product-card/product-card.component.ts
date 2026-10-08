@@ -3,6 +3,10 @@ import { RouterLink } from '@angular/router';
 import { Product } from '../../../core/models/product.model';
 import { AppCurrencyPipe } from '../../pipes/app-currency.pipe';
 import { ProductImagePipe } from '../../pipes/product-image.pipe';
+import {
+  ECOMMERCE_AVAILABLE_SOON,
+  isProductPurchasable,
+} from '../../../core/utils/product-availability.util';
 @Component({
   selector: 'app-product-card',
   imports: [RouterLink, AppCurrencyPipe, ProductImagePipe],
@@ -27,16 +31,21 @@ import { ProductImagePipe } from '../../pipes/product-image.pipe';
           <h4 class="my-0 font-semibold text-slate-800 line-clamp-2 leading-tight flex-grow">{{ product().name }}</h4>
         </div>
       </a>
-      <div class="px-5 pb-2.5 flex items-center justify-between pt-2 border-t border-slate-50 mt-auto">
- 
-        <span class="text-lg font-bold text-slate-900">{{ product().price | appCurrency }}</span>
-        <button
-          (click)="onAddToCart($event)"
-          class="flex items-center justify-center bg-slate-900 hover:bg-amber-600 text-white p-2.5 rounded-lg transition-colors"
-          title="Add to cart"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-        </button>
+      <div class="px-5 pb-2.5 flex flex-col gap-2 pt-2 border-t border-slate-50 mt-auto">
+        <div class="flex items-center justify-between">
+          <span class="text-lg font-bold text-slate-900">{{ product().price | appCurrency }}</span>
+          <button
+            (click)="onAddToCart($event)"
+            [disabled]="!purchasable()"
+            class="flex items-center justify-center bg-slate-900 hover:bg-amber-600 disabled:bg-slate-300 disabled:cursor-not-allowed text-white p-2.5 rounded-lg transition-colors"
+            title="Add to cart"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+          </button>
+        </div>
+        @if (product().ecommerceOutOfStock) {
+          <p class="text-xs text-amber-600 font-medium m-0">{{ availableSoon }}</p>
+        }
       </div>
     </div>
   `,
@@ -44,6 +53,10 @@ import { ProductImagePipe } from '../../pipes/product-image.pipe';
 export class ProductCardComponent {
   readonly product = input.required<Product>();
   readonly addToCart = output<Product>();
+
+  readonly availableSoon = ECOMMERCE_AVAILABLE_SOON;
+
+  readonly purchasable = computed(() => isProductPurchasable(this.product()));
 
   readonly imageAlt = computed(() => {
     const p = this.product();
@@ -60,6 +73,9 @@ export class ProductCardComponent {
   onAddToCart(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
+    if (!this.purchasable()) {
+      return;
+    }
     this.addToCart.emit(this.product());
   }
 }
