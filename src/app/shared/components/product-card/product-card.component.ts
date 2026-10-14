@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Product } from '../../../core/models/product.model';
-import { AppCurrencyPipe } from '../../pipes/app-currency.pipe';
+import { ProductPriceComponent } from '../product-price/product-price.component';
 import { ProductImagePipe } from '../../pipes/product-image.pipe';
 @Component({
   selector: 'app-product-card',
-  imports: [RouterLink, AppCurrencyPipe, ProductImagePipe],
+  imports: [RouterLink, ProductPriceComponent, ProductImagePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg border border-slate-100 transition-all duration-300 group flex flex-col h-full">
@@ -29,7 +29,7 @@ import { ProductImagePipe } from '../../pipes/product-image.pipe';
       </a>
       <div class="px-5 pb-2.5 flex items-center justify-between pt-2 border-t border-slate-50 mt-auto">
  
-        <span class="text-lg font-bold text-slate-900">{{ product().price | appCurrency }}</span>
+        <app-product-price [price]="product().price" [mrp]="product().mrp" size="md" />
         <button
           (click)="onAddToCart($event)"
           class="flex items-center justify-center bg-slate-900 hover:bg-amber-600 text-white p-2.5 rounded-lg transition-colors"

@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { Product } from '../../../core/models/product.model';
-import { AppCurrencyPipe } from '../../../shared/pipes/app-currency.pipe';
+import { ProductPriceComponent } from '../../../shared/components/product-price/product-price.component';
 import { ProductImagePipe } from '../../../shared/pipes/product-image.pipe';
 import { PRODUCT_PLACEHOLDER_IMAGE } from '../../../core/utils/product-image.util';
 
 @Component({
   selector: 'app-similar-products',
-  imports: [RouterLink, AppCurrencyPipe, ProductImagePipe],
+  imports: [RouterLink, ProductPriceComponent, ProductImagePipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (products().length > 0) {
@@ -29,7 +29,7 @@ import { PRODUCT_PLACEHOLDER_IMAGE } from '../../../core/utils/product-image.uti
               </div>
               <div class="p-3">
                 <p class="text-xs font-medium text-slate-800 line-clamp-2 leading-tight mb-1">{{ product.name }}</p>
-                <p class="text-sm font-bold text-slate-900">{{ product.price | appCurrency }}</p>
+                <app-product-price [price]="product.price" [mrp]="product.mrp" size="sm" />
               </div>
             </a>
           }

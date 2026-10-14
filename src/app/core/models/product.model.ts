@@ -11,6 +11,7 @@ export interface Product {
   slug: string;
   name: string;
   price: number;
+  mrp?: number;
   category: string;
   mainCategory?: string;
   rating: number;

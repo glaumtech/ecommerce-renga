@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { Product } from '../../../core/models/product.model';
-import { AppCurrencyPipe } from '../../../shared/pipes/app-currency.pipe';
+import { ProductPriceComponent } from '../../../shared/components/product-price/product-price.component';
 @Component({
   selector: 'app-product-info',
-  imports: [AppCurrencyPipe],
+  imports: [ProductPriceComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="bg-white border border-slate-200 rounded-xl p-6 lg:p-8">
@@ -13,8 +13,8 @@ import { AppCurrencyPipe } from '../../../shared/pipes/app-currency.pipe';
       <h1 class="text-2xl lg:text-3xl font-bold text-slate-900 mb-6 leading-tight">{{ product().name }}</h1>
 
       <div class="mb-4">
-        <span class="text-3xl font-bold text-slate-900">{{ product().price | appCurrency }}</span>
-        <span class="text-sm text-slate-500 ml-2">Inclusive of all taxes</span>
+        <app-product-price [price]="product().price" [mrp]="product().mrp" size="lg" />
+        <p class="text-sm text-slate-500 mt-1">Inclusive of all taxes</p>
       </div>
 
       @if (product().desc) {

@@ -17,6 +17,7 @@ interface StoreProductDto {
   name: string;
   description?: string;
   price: number;
+  mrp?: number | string | null;
   category?: string;
   mainCategory?: string;
   brand?: string;
@@ -194,6 +195,7 @@ export class ProductService {
       slug: dto.slug || '',
       name: dto.name,
       price: Number(dto.price),
+      mrp: dto.mrp != null ? Number(dto.mrp) : undefined,
       category: dto.category || 'Uncategorized',
       mainCategory: dto.mainCategory,
       rating: dto.rating ?? 4.5,
