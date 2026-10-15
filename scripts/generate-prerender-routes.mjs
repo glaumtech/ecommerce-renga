@@ -14,6 +14,8 @@ const staticRoutes = [
   '/shop/herbal-health',
   '/shop/herbal-beauty',
   '/about-us',
+  '/return-policy',
+  '/privacy-policy',
   '/cart',
 ];
 

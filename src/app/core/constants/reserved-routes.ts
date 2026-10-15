@@ -6,6 +6,7 @@ export const RESERVED_ROUTE_PATHS = new Set([
   'account',
   'about-us',
   'return-policy',
+  'privacy-policy',
   'admin',
 ]);
 

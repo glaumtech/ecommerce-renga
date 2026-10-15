@@ -108,6 +108,28 @@ export class SeoService {
     this.removeJsonLd('breadcrumb');
   }
 
+  applyPrivacyPolicySeo(settings: StoreSeoSettings): void {
+    const siteName = settings.siteName || 'Sri Renga Traders';
+    const title = `Privacy Policy | ${siteName}`;
+    const description =
+      'Learn what personal information Sri Renga Traders collects, how we use it to process orders and send updates, and the choices you have.';
+    const canonicalUrl = `${settings.siteUrl?.replace(/\/+$/, '') || 'https://rengaa.in'}/privacy-policy`;
+
+    this.title.setTitle(title);
+    this.meta.updateTag({ name: 'description', content: description });
+    this.meta.updateTag({ name: 'robots', content: 'index' });
+    this.meta.updateTag({ property: 'og:title', content: title });
+    this.meta.updateTag({ property: 'og:description', content: description });
+    this.meta.updateTag({ property: 'og:type', content: 'website' });
+    this.meta.updateTag({ property: 'og:url', content: canonicalUrl });
+
+    this.setCanonical(canonicalUrl);
+    this.applySiteMetaTags(settings);
+    this.setOrganizationJsonLd(settings);
+    this.removeJsonLd('product');
+    this.removeJsonLd('breadcrumb');
+  }
+
   applyAboutSeo(settings: StoreSeoSettings): void {
     const siteName = settings.siteName || 'Sri Renga Traders';
     const title = `About Us | ${siteName}, Trichy`;

@@ -50,6 +50,7 @@ import { ProductService } from '../../../core/services/product.service';
           <ul class="space-y-2 text-sm">
             <li><a routerLink="/about-us" class="text-white hover:text-amber-500 transition-colors">About Us</a></li>
             <li><a routerLink="/return-policy" class="text-white hover:text-amber-500 transition-colors">Return Policy</a></li>
+            <li><a routerLink="/privacy-policy" class="text-white hover:text-amber-500 transition-colors">Privacy Policy</a></li>
             <li><a routerLink="/account" class="text-white hover:text-amber-500 transition-colors">Track Order</a></li>
             <li><a href="#" class="text-white hover:text-amber-500 transition-colors">Shipping Policy</a></li>
             <li><a href="#" class="text-white hover:text-amber-500 transition-colors">Contact Us</a></li>

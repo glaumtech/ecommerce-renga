@@ -107,6 +107,11 @@ export const routes: Routes = [
           import('./features/return-policy/return-policy.component').then((m) => m.ReturnPolicyComponent),
       },
       {
+        path: 'privacy-policy',
+        loadComponent: () =>
+          import('./features/privacy-policy/privacy-policy.component').then((m) => m.PrivacyPolicyComponent),
+      },
+      {
         path: ':slug',
         canActivate: [productSlugGuard],
         resolve: { seo: productSeoResolver },
